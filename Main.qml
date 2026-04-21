@@ -23,21 +23,29 @@ ApplicationWindow {
             Layout.fillWidth: true
 
             RowLayout {
-                TextField {
-                    id: tapeAlphabet
-                    placeholderText: "Алфавит ленты (01)"
-                    text: "01"
-                    Layout.fillWidth: true
+                Column {
+                    Label { text: "Алфавит ленты:" }
+                    TextField {
+                        id: tapeAlphabetInput
+                        placeholderText: "Например: 01Λ"
+                        text: "01Λ"
+                        width: 250
+                    }
                 }
-                TextField {
-                    id: extraAlphabet
-                    placeholderText: "Доп. символы"
-                    Layout.fillWidth: true
+
+                Column {
+                    Label { text: "Дополнительные символы:" }
+                    TextField {
+                        id: extraAlphabetInput
+                        placeholderText: "Например: #$%"
+                        width: 200
+                    }
                 }
+
                 Button {
-                    text: "Задать"
+                    text: "Задать алфавиты"
                     onClicked: {
-                        turingMachine.setAlphabet(tapeAlphabet.text, extraAlphabet.text)
+                        turingMachine.setAlphabet(tapeAlphabetInput.text, extraAlphabetInput.text)
                     }
                 }
             }
@@ -76,15 +84,16 @@ ApplicationWindow {
 
         // Ввод строки
         RowLayout {
+            Label { text: "Входная строка:" }
             TextField {
-                id: inputString
-                placeholderText: "Входная строка"
+                id: inputStringField
+                placeholderText: "Введите строку из символов алфавита"
                 Layout.fillWidth: true
             }
             Button {
                 text: "Задать строку"
                 onClicked: {
-                    if (turingMachine) turingMachine.loadInputString(inputString.text)
+                    if (turingMachine) turingMachine.loadInputString(inputStringField.text)
                 }
             }
         }
@@ -101,7 +110,31 @@ ApplicationWindow {
                     Button { text: "- Состояние"; onClicked: { if(turingMachine) turingMachine.removeState() } }
                     Button { text: "+ Символ"; onClicked: { if(turingMachine && symbolInput.text) turingMachine.addSymbol(symbolInput.text) } }
                     Button { text: "- Символ"; onClicked: { if(turingMachine && symbolInput.text) turingMachine.removeSymbol(symbolInput.text) } }
-                    TextField { id: symbolInput; placeholderText: "Символ"; width: 60 }
+                    TextField {
+                        id: symbolInput
+                        placeholderText: "Символ"
+                        width: 80
+                    }
+
+                    // Кнопка для вставки лямбды - рядом с полем ввода символа
+                    Button {
+                        text: "Λ"
+                        font.pixelSize: 16
+                        ToolTip.text: "Вставить пустой символ (лямбда)"
+                        ToolTip.visible: hovered
+                        onClicked: {
+                            symbolInput.text += "Λ"
+                            symbolInput.forceActiveFocus()
+                        }
+                    }
+
+                    Item { Layout.fillWidth: true }
+
+                    Label {
+                        text: "Λ - пустой символ"
+                        color: "gray"
+                        font.italic: true
+                    }
                 }
 
                 ScrollView {
@@ -121,7 +154,11 @@ ApplicationWindow {
                                 id: headerRepeater
                                 model: currentAlphabet
                                 Rectangle { width: 100; height: 30; color: "#d0d0d0"; border.color: "gray"
-                                    Text { text: modelData; anchors.centerIn: parent; font.bold: true }
+                                    Text {
+                                        text: modelData
+                                        anchors.centerIn: parent
+                                        font.bold: true
+                                    }
                                 }
                             }
                         }
@@ -168,8 +205,26 @@ ApplicationWindow {
             Button { text: "Шаг"; onClicked: { if(turingMachine) turingMachine.step() } }
             Button { text: "Стоп"; onClicked: { if(turingMachine) turingMachine.stop() } }
             Button { text: "Сброс"; onClicked: { if(turingMachine) turingMachine.reset() } }
+
+            Rectangle { width: 20; color: "transparent" }
+
             Text { text: "Состояние: " + (turingMachine ? turingMachine.currentState : "") }
             Text { text: "Позиция: " + (turingMachine ? turingMachine.headPosition : "") }
+
+            Item { Layout.fillWidth: true }
+
+            Text { text: "Скорость:" }
+            Slider {
+                id: speedSlider
+                from: 1
+                to: 20
+                value: 5
+                width: 100
+                onValueChanged: {
+                    if (turingMachine) turingMachine.speed = value
+                }
+            }
+            Text { text: speedSlider.value.toFixed(0) }
         }
     }
 
@@ -191,24 +246,8 @@ ApplicationWindow {
 
     Component.onCompleted: {
         if (turingMachine) {
-            turingMachine.setAlphabet("01", "")
+            turingMachine.setAlphabet("01Λ", "")
             updateTable()
-        }
-    }
-}
-Button {
-    text: "Λ"
-    font.pixelSize: 16
-    ToolTip.text: "Вставить пустой символ"
-    ToolTip.visible: hovered
-    onClicked: {
-        // Вставить в активное поле ввода
-        if (tapeAlphabetInput.activeFocus) {
-            tapeAlphabetInput.text += "Λ"
-        } else if (extraAlphabetInput.activeFocus) {
-            extraAlphabetInput.text += "Λ"
-        } else if (symbolInput.activeFocus) {
-            symbolInput.text += "Λ"
         }
     }
 }
