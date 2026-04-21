@@ -78,10 +78,12 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_list.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_map.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_multimap.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/stl_multiset.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_numeric.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_pair.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_raw_storage_iter.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_relops.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/stl_set.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_tempbuf.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_tree.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/stl_uninitialized.h \
@@ -94,6 +96,7 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/c++/15.2.0/bits/uniform_int_dist.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/unique_ptr.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_map.h \
+  C:/msys64/mingw64/include/c++/15.2.0/bits/unordered_set.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/uses_allocator.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/uses_allocator_args.h \
   C:/msys64/mingw64/include/c++/15.2.0/bits/utility.h \
@@ -102,6 +105,7 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/c++/15.2.0/cctype \
   C:/msys64/mingw64/include/c++/15.2.0/cerrno \
   C:/msys64/mingw64/include/c++/15.2.0/chrono \
+  C:/msys64/mingw64/include/c++/15.2.0/climits \
   C:/msys64/mingw64/include/c++/15.2.0/clocale \
   C:/msys64/mingw64/include/c++/15.2.0/cmath \
   C:/msys64/mingw64/include/c++/15.2.0/compare \
@@ -138,6 +142,7 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/c++/15.2.0/pstl/glue_numeric_defs.h \
   C:/msys64/mingw64/include/c++/15.2.0/pstl/pstl_config.h \
   C:/msys64/mingw64/include/c++/15.2.0/ratio \
+  C:/msys64/mingw64/include/c++/15.2.0/set \
   C:/msys64/mingw64/include/c++/15.2.0/stdexcept \
   C:/msys64/mingw64/include/c++/15.2.0/streambuf \
   C:/msys64/mingw64/include/c++/15.2.0/string \
@@ -159,6 +164,7 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/c++/15.2.0/type_traits \
   C:/msys64/mingw64/include/c++/15.2.0/typeinfo \
   C:/msys64/mingw64/include/c++/15.2.0/unordered_map \
+  C:/msys64/mingw64/include/c++/15.2.0/unordered_set \
   C:/msys64/mingw64/include/c++/15.2.0/utility \
   C:/msys64/mingw64/include/c++/15.2.0/variant \
   C:/msys64/mingw64/include/c++/15.2.0/vector \
@@ -196,13 +202,17 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/qt6/QtCore/QSet \
   C:/msys64/mingw64/include/qt6/QtCore/QString \
   C:/msys64/mingw64/include/qt6/QtCore/QTimer \
+  C:/msys64/mingw64/include/qt6/QtCore/QVariant \
   C:/msys64/mingw64/include/qt6/QtCore/q17memory.h \
   C:/msys64/mingw64/include/qt6/QtCore/q20functional.h \
   C:/msys64/mingw64/include/qt6/QtCore/q20memory.h \
   C:/msys64/mingw64/include/qt6/QtCore/q20type_traits.h \
+  C:/msys64/mingw64/include/qt6/QtCore/q20utility.h \
   C:/msys64/mingw64/include/qt6/QtCore/q23type_traits.h \
+  C:/msys64/mingw64/include/qt6/QtCore/q23utility.h \
   C:/msys64/mingw64/include/qt6/QtCore/qabstracteventdispatcher.h \
   C:/msys64/mingw64/include/qt6/QtCore/qalgorithms.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qalloc.h \
   C:/msys64/mingw64/include/qt6/QtCore/qanystringview.h \
   C:/msys64/mingw64/include/qt6/QtCore/qarraydata.h \
   C:/msys64/mingw64/include/qt6/QtCore/qarraydataops.h \
@@ -227,9 +237,11 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/qt6/QtCore/qcontainerfwd.h \
   C:/msys64/mingw64/include/qt6/QtCore/qcontainerinfo.h \
   C:/msys64/mingw64/include/qt6/QtCore/qcontainertools_impl.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qcontiguouscache.h \
   C:/msys64/mingw64/include/qt6/QtCore/qdarwinhelpers.h \
   C:/msys64/mingw64/include/qt6/QtCore/qdatastream.h \
   C:/msys64/mingw64/include/qt6/QtCore/qdeadlinetimer.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qdebug.h \
   C:/msys64/mingw64/include/qt6/QtCore/qeventloop.h \
   C:/msys64/mingw64/include/qt6/QtCore/qexceptionhandling.h \
   C:/msys64/mingw64/include/qt6/QtCore/qflags.h \
@@ -269,6 +281,8 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/qt6/QtCore/qset.h \
   C:/msys64/mingw64/include/qt6/QtCore/qshareddata.h \
   C:/msys64/mingw64/include/qt6/QtCore/qshareddata_impl.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qsharedpointer.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qsharedpointer_impl.h \
   C:/msys64/mingw64/include/qt6/QtCore/qstdlibdetection.h \
   C:/msys64/mingw64/include/qt6/QtCore/qstring.h \
   C:/msys64/mingw64/include/qt6/QtCore/qstringalgorithms.h \
@@ -293,6 +307,7 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/qt6/QtCore/qtdeprecationdefinitions.h \
   C:/msys64/mingw64/include/qt6/QtCore/qtdeprecationmarkers.h \
   C:/msys64/mingw64/include/qt6/QtCore/qtenvironmentvariables.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qtextstream.h \
   C:/msys64/mingw64/include/qt6/QtCore/qtformat_impl.h \
   C:/msys64/mingw64/include/qt6/QtCore/qtimer.h \
   C:/msys64/mingw64/include/qt6/QtCore/qtmetamacros.h \
@@ -306,6 +321,8 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/qt6/QtCore/qtypeinfo.h \
   C:/msys64/mingw64/include/qt6/QtCore/qtypes.h \
   C:/msys64/mingw64/include/qt6/QtCore/qutf8stringview.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qvariant.h \
+  C:/msys64/mingw64/include/qt6/QtCore/qvarlengtharray.h \
   C:/msys64/mingw64/include/qt6/QtCore/qversiontagging.h \
   C:/msys64/mingw64/include/qt6/QtCore/qxptype_traits.h \
   C:/msys64/mingw64/include/qt6/QtCore/qyieldcpu.h \

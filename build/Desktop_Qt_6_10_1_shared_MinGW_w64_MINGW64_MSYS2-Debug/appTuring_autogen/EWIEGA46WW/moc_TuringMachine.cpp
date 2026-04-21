@@ -55,6 +55,9 @@ template <> constexpr inline auto TuringMachine::qt_create_metaobjectdata<qt_met
         "alphabetChanged",
         "programChanged",
         "executeStep",
+        "getStates",
+        "QVariantList",
+        "getAlphabet",
         "setAlphabet",
         "tapeAlphabet",
         "extraAlphabet",
@@ -71,8 +74,6 @@ template <> constexpr inline auto TuringMachine::qt_create_metaobjectdata<qt_met
         "setTransitionString",
         "value",
         "getTransition",
-        "getStates",
-        "getAlphabet",
         "clearProgram",
         "loadInputString",
         "input",
@@ -84,7 +85,9 @@ template <> constexpr inline auto TuringMachine::qt_create_metaobjectdata<qt_met
         "headPosition",
         "currentState",
         "isRunning",
-        "speed"
+        "speed",
+        "states",
+        "alphabet"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -118,65 +121,69 @@ template <> constexpr inline auto TuringMachine::qt_create_metaobjectdata<qt_met
         QtMocHelpers::SignalData<void()>(15, 2, QMC::AccessPublic, QMetaType::Void),
         // Slot 'executeStep'
         QtMocHelpers::SlotData<void()>(16, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Method 'getStates'
+        QtMocHelpers::MethodData<QVariantList() const>(17, 2, QMC::AccessPublic, 0x80000000 | 18),
+        // Method 'getAlphabet'
+        QtMocHelpers::MethodData<QVariantList() const>(19, 2, QMC::AccessPublic, 0x80000000 | 18),
         // Method 'setAlphabet'
-        QtMocHelpers::MethodData<void(const QString &, const QString &)>(17, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 18 }, { QMetaType::QString, 19 },
+        QtMocHelpers::MethodData<void(const QString &, const QString &)>(20, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 21 }, { QMetaType::QString, 22 },
         }}),
         // Method 'addState'
-        QtMocHelpers::MethodData<void()>(20, 2, QMC::AccessPublic, QMetaType::Void),
+        QtMocHelpers::MethodData<void()>(23, 2, QMC::AccessPublic, QMetaType::Void),
         // Method 'removeState'
-        QtMocHelpers::MethodData<void()>(21, 2, QMC::AccessPublic, QMetaType::Void),
+        QtMocHelpers::MethodData<void()>(24, 2, QMC::AccessPublic, QMetaType::Void),
         // Method 'addSymbol'
-        QtMocHelpers::MethodData<void(const QString &)>(22, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 23 },
+        QtMocHelpers::MethodData<void(const QString &)>(25, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 26 },
         }}),
         // Method 'removeSymbol'
-        QtMocHelpers::MethodData<void(const QString &)>(24, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 23 },
+        QtMocHelpers::MethodData<void(const QString &)>(27, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 26 },
         }}),
         // Method 'setTransition'
-        QtMocHelpers::MethodData<void(const QString &, const QString &, const QString &, const QString &, const QString &)>(25, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 26 }, { QMetaType::QString, 23 }, { QMetaType::QString, 27 }, { QMetaType::QString, 28 },
-            { QMetaType::QString, 29 },
+        QtMocHelpers::MethodData<void(const QString &, const QString &, const QString &, const QString &, const QString &)>(28, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 29 }, { QMetaType::QString, 26 }, { QMetaType::QString, 30 }, { QMetaType::QString, 31 },
+            { QMetaType::QString, 32 },
         }}),
         // Method 'setTransitionString'
-        QtMocHelpers::MethodData<void(const QString &, const QString &, const QString &)>(30, 2, QMC::AccessPublic, QMetaType::Void, {{
-            { QMetaType::QString, 26 }, { QMetaType::QString, 23 }, { QMetaType::QString, 31 },
+        QtMocHelpers::MethodData<void(const QString &, const QString &, const QString &)>(33, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::QString, 29 }, { QMetaType::QString, 26 }, { QMetaType::QString, 34 },
         }}),
         // Method 'getTransition'
-        QtMocHelpers::MethodData<QString(const QString &, const QString &) const>(32, 2, QMC::AccessPublic, QMetaType::QString, {{
-            { QMetaType::QString, 26 }, { QMetaType::QString, 23 },
+        QtMocHelpers::MethodData<QString(const QString &, const QString &) const>(35, 2, QMC::AccessPublic, QMetaType::QString, {{
+            { QMetaType::QString, 29 }, { QMetaType::QString, 26 },
         }}),
-        // Method 'getStates'
-        QtMocHelpers::MethodData<QStringList() const>(33, 2, QMC::AccessPublic, QMetaType::QStringList),
-        // Method 'getAlphabet'
-        QtMocHelpers::MethodData<QStringList() const>(34, 2, QMC::AccessPublic, QMetaType::QStringList),
         // Method 'clearProgram'
-        QtMocHelpers::MethodData<void()>(35, 2, QMC::AccessPublic, QMetaType::Void),
+        QtMocHelpers::MethodData<void()>(36, 2, QMC::AccessPublic, QMetaType::Void),
         // Method 'loadInputString'
-        QtMocHelpers::MethodData<bool(const QString &)>(36, 2, QMC::AccessPublic, QMetaType::Bool, {{
-            { QMetaType::QString, 37 },
+        QtMocHelpers::MethodData<bool(const QString &)>(37, 2, QMC::AccessPublic, QMetaType::Bool, {{
+            { QMetaType::QString, 38 },
         }}),
         // Method 'start'
-        QtMocHelpers::MethodData<void()>(38, 2, QMC::AccessPublic, QMetaType::Void),
-        // Method 'stop'
         QtMocHelpers::MethodData<void()>(39, 2, QMC::AccessPublic, QMetaType::Void),
-        // Method 'step'
+        // Method 'stop'
         QtMocHelpers::MethodData<void()>(40, 2, QMC::AccessPublic, QMetaType::Void),
-        // Method 'reset'
+        // Method 'step'
         QtMocHelpers::MethodData<void()>(41, 2, QMC::AccessPublic, QMetaType::Void),
+        // Method 'reset'
+        QtMocHelpers::MethodData<void()>(42, 2, QMC::AccessPublic, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
         // property 'tape'
-        QtMocHelpers::PropertyData<QStringList>(42, QMetaType::QStringList, QMC::DefaultPropertyFlags, 0),
+        QtMocHelpers::PropertyData<QStringList>(43, QMetaType::QStringList, QMC::DefaultPropertyFlags, 0),
         // property 'headPosition'
-        QtMocHelpers::PropertyData<int>(43, QMetaType::Int, QMC::DefaultPropertyFlags, 1),
+        QtMocHelpers::PropertyData<int>(44, QMetaType::Int, QMC::DefaultPropertyFlags, 1),
         // property 'currentState'
-        QtMocHelpers::PropertyData<QString>(44, QMetaType::QString, QMC::DefaultPropertyFlags, 2),
+        QtMocHelpers::PropertyData<QString>(45, QMetaType::QString, QMC::DefaultPropertyFlags, 2),
         // property 'isRunning'
-        QtMocHelpers::PropertyData<bool>(45, QMetaType::Bool, QMC::DefaultPropertyFlags, 3),
+        QtMocHelpers::PropertyData<bool>(46, QMetaType::Bool, QMC::DefaultPropertyFlags, 3),
         // property 'speed'
-        QtMocHelpers::PropertyData<int>(46, QMetaType::Int, QMC::DefaultPropertyFlags | QMC::Writable | QMC::StdCppSet, 4),
+        QtMocHelpers::PropertyData<int>(47, QMetaType::Int, QMC::DefaultPropertyFlags | QMC::Writable | QMC::StdCppSet, 4),
+        // property 'states'
+        QtMocHelpers::PropertyData<QVariantList>(48, 0x80000000 | 18, QMC::DefaultPropertyFlags | QMC::EnumOrFlag, 8),
+        // property 'alphabet'
+        QtMocHelpers::PropertyData<QVariantList>(49, 0x80000000 | 18, QMC::DefaultPropertyFlags | QMC::EnumOrFlag, 9),
     };
     QtMocHelpers::UintData qt_enums {
     };
@@ -210,19 +217,19 @@ void TuringMachine::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 9: _t->alphabetChanged(); break;
         case 10: _t->programChanged(); break;
         case 11: _t->executeStep(); break;
-        case 12: _t->setAlphabet((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2]))); break;
-        case 13: _t->addState(); break;
-        case 14: _t->removeState(); break;
-        case 15: _t->addSymbol((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
-        case 16: _t->removeSymbol((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
-        case 17: _t->setTransition((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[4])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[5]))); break;
-        case 18: _t->setTransitionString((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3]))); break;
-        case 19: { QString _r = _t->getTransition((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])));
+        case 12: { QVariantList _r = _t->getStates();
+            if (_a[0]) *reinterpret_cast<QVariantList*>(_a[0]) = std::move(_r); }  break;
+        case 13: { QVariantList _r = _t->getAlphabet();
+            if (_a[0]) *reinterpret_cast<QVariantList*>(_a[0]) = std::move(_r); }  break;
+        case 14: _t->setAlphabet((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2]))); break;
+        case 15: _t->addState(); break;
+        case 16: _t->removeState(); break;
+        case 17: _t->addSymbol((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
+        case 18: _t->removeSymbol((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
+        case 19: _t->setTransition((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[4])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[5]))); break;
+        case 20: _t->setTransitionString((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3]))); break;
+        case 21: { QString _r = _t->getTransition((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])));
             if (_a[0]) *reinterpret_cast<QString*>(_a[0]) = std::move(_r); }  break;
-        case 20: { QStringList _r = _t->getStates();
-            if (_a[0]) *reinterpret_cast<QStringList*>(_a[0]) = std::move(_r); }  break;
-        case 21: { QStringList _r = _t->getAlphabet();
-            if (_a[0]) *reinterpret_cast<QStringList*>(_a[0]) = std::move(_r); }  break;
         case 22: _t->clearProgram(); break;
         case 23: { bool _r = _t->loadInputString((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])));
             if (_a[0]) *reinterpret_cast<bool*>(_a[0]) = std::move(_r); }  break;
@@ -265,6 +272,8 @@ void TuringMachine::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 2: *reinterpret_cast<QString*>(_v) = _t->getCurrentState(); break;
         case 3: *reinterpret_cast<bool*>(_v) = _t->isRunning(); break;
         case 4: *reinterpret_cast<int*>(_v) = _t->getSpeed(); break;
+        case 5: *reinterpret_cast<QVariantList*>(_v) = _t->getStates(); break;
+        case 6: *reinterpret_cast<QVariantList*>(_v) = _t->getAlphabet(); break;
         default: break;
         }
     }
@@ -309,7 +318,7 @@ int TuringMachine::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::BindableProperty
             || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 5;
+        _id -= 7;
     }
     return _id;
 }

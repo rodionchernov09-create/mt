@@ -57,6 +57,7 @@ void TuringMachine::addState()
 {
     QString newState = "q" + QString::number(m_states.size());
     m_states.append(newState);
+    qDebug() << "Added state:" << newState << "Total states:" << m_states;
     emit statesChanged();
     emit programChanged();
 }
@@ -89,6 +90,7 @@ void TuringMachine::addSymbol(const QString &symbol)
 {
     if (!m_alphabet.contains(symbol) && symbol != "Λ") {
         m_alphabet.append(symbol);
+        qDebug() << "Added symbol:" << symbol << "Total symbols:" << m_alphabet;
         emit alphabetChanged();
         emit programChanged();
     }
@@ -141,8 +143,11 @@ void TuringMachine::setTransitionString(const QString &state, const QString &sym
         QStringList parts = value.split(',');
         if (parts.size() == 3) {
             setTransition(state, symbol, parts[0], parts[1], parts[2]);
+        } else {
+            emit error("Invalid format. Use: символ,движение,состояние");
         }
     }
+    emit programChanged();
 }
 
 QString TuringMachine::getTransition(const QString &state, const QString &symbol) const

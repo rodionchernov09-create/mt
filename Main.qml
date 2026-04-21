@@ -5,9 +5,12 @@ import QtQuick.Layouts
 ApplicationWindow {
     id: mainWindow
     visible: true
-    width: 1200
-    height: 800
+    width: 1000
+    height: 700
     title: "Эмулятор Машины Тьюринга"
+
+    property var currentStates: []
+    property var currentAlphabet: []
 
     ColumnLayout {
         anchors.fill: parent
@@ -20,32 +23,21 @@ ApplicationWindow {
             Layout.fillWidth: true
 
             RowLayout {
-                spacing: 10
-
-                Column {
-                    Label { text: "Алфавит ленты:" }
-                    TextField {
-                        id: tapeAlphabetInput
-                        placeholderText: "Например: 01"
-                        width: 200
-                    }
+                TextField {
+                    id: tapeAlphabet
+                    placeholderText: "Алфавит ленты (01)"
+                    text: "01"
+                    Layout.fillWidth: true
                 }
-
-                Column {
-                    Label { text: "Дополнительные символы:" }
-                    TextField {
-                        id: extraAlphabetInput
-                        placeholderText: "Например: #$%"
-                        width: 200
-                    }
+                TextField {
+                    id: extraAlphabet
+                    placeholderText: "Доп. символы"
+                    Layout.fillWidth: true
                 }
-
                 Button {
-                    id: setAlphabetButton
-                    text: "Задать алфавиты"
+                    text: "Задать"
                     onClicked: {
-                        turingMachine.setAlphabet(tapeAlphabetInput.text, extraAlphabetInput.text)
-                        statusText.text = "Алфавиты заданы"
+                        turingMachine.setAlphabet(tapeAlphabet.text, extraAlphabet.text)
                     }
                 }
             }
@@ -55,35 +47,26 @@ ApplicationWindow {
         GroupBox {
             title: "Лента"
             Layout.fillWidth: true
-            Layout.preferredHeight: 120
+            Layout.preferredHeight: 100
 
             ScrollView {
-                id: tapeScrollView
                 anchors.fill: parent
-                clip: true
-
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
 
                 Row {
-                    id: tapeRow
                     spacing: 2
-
                     Repeater {
                         id: tapeRepeater
-                        model: turingMachine.tape
-
+                        model: turingMachine ? turingMachine.tape : []
                         delegate: Rectangle {
-                            width: 60
-                            height: 60
+                            width: 50
+                            height: 50
                             border.color: "black"
-                            border.width: 2
-                            color: index === turingMachine.headPosition ? "#90EE90" : "white"
-
+                            color: (turingMachine && index === turingMachine.headPosition) ? "lightgreen" : "white"
                             Text {
                                 anchors.centerIn: parent
                                 text: modelData
-                                font.pixelSize: 24
-                                font.family: "Courier"
+                                font.pixelSize: 20
                             }
                         }
                     }
@@ -93,44 +76,32 @@ ApplicationWindow {
 
         // Ввод строки
         RowLayout {
-            Label { text: "Входная строка:" }
             TextField {
-                id: inputStringField
+                id: inputString
+                placeholderText: "Входная строка"
                 Layout.fillWidth: true
-                placeholderText: "Введите строку из символов алфавита"
             }
             Button {
-                id: setStringButton
                 text: "Задать строку"
                 onClicked: {
-                    if (turingMachine.loadInputString(inputStringField.text)) {
-                        tapeRepeater.model = turingMachine.tape
-                        statusText.text = "Строка загружена"
-                    }
+                    if (turingMachine) turingMachine.loadInputString(inputString.text)
                 }
             }
         }
 
-        // Таблица программы (упрощённая версия)
+        // Таблица программы
         GroupBox {
-            title: "Программа машины Тьюринга"
+            title: "Программа"
             Layout.fillWidth: true
             Layout.fillHeight: true
 
             ColumnLayout {
-                anchors.fill: parent
-                spacing: 5
-
                 RowLayout {
-                    Button {
-                        text: "+ Состояние"
-                        onClicked: turingMachine.addState()
-                    }
-                    Button {
-                        text: "- Состояние"
-                        onClicked: turingMachine.removeState()
-                    }
-                    Item { Layout.fillWidth: true }
+                    Button { text: "+ Состояние"; onClicked: { if(turingMachine) turingMachine.addState() } }
+                    Button { text: "- Состояние"; onClicked: { if(turingMachine) turingMachine.removeState() } }
+                    Button { text: "+ Символ"; onClicked: { if(turingMachine && symbolInput.text) turingMachine.addSymbol(symbolInput.text) } }
+                    Button { text: "- Символ"; onClicked: { if(turingMachine && symbolInput.text) turingMachine.removeSymbol(symbolInput.text) } }
+                    TextField { id: symbolInput; placeholderText: "Символ"; width: 60 }
                 }
 
                 ScrollView {
@@ -139,47 +110,47 @@ ApplicationWindow {
                     clip: true
 
                     Column {
+                        id: tableContainer
+
+                        // Заголовок
+                        Row {
+                            Rectangle { width: 80; height: 30; color: "#d0d0d0"; border.color: "gray"
+                                Text { text: "Состояние"; anchors.centerIn: parent; font.bold: true }
+                            }
+                            Repeater {
+                                id: headerRepeater
+                                model: currentAlphabet
+                                Rectangle { width: 100; height: 30; color: "#d0d0d0"; border.color: "gray"
+                                    Text { text: modelData; anchors.centerIn: parent; font.bold: true }
+                                }
+                            }
+                        }
+
+                        // Строки состояний
                         Repeater {
-                            id: statesRepeater
-                            model: turingMachine.states
+                            id: rowsRepeater
+                            model: currentStates
 
-                            delegate: Rectangle {
-                                width: 600
-                                height: 30
-                                color: "transparent"
-
-                                Row {
-                                    Rectangle {
-                                        width: 80
-                                        height: 30
-                                        color: "#e0e0e0"
-                                        border.color: "gray"
-                                        Text {
-                                            anchors.centerIn: parent
-                                            text: modelData
-                                            font.bold: true
-                                        }
-                                    }
-
-                                    Repeater {
-                                        model: turingMachine.alphabet
-
-                                        delegate: Rectangle {
-                                            width: 100
-                                            height: 30
-                                            color: "white"
-                                            border.color: "gray"
-
-                                            TextField {
-                                                anchors.fill: parent
-                                                anchors.margins: 2
-                                                text: turingMachine.getTransition(statesRepeater.model[index], modelData)
-                                                placeholderText: "символ,R,q1"
-                                                font.pixelSize: 11
-
-                                                onEditingFinished: {
-                                                    turingMachine.setTransitionString(statesRepeater.model[index], modelData, text)
-                                                }
+                            Row {
+                                Rectangle { width: 80; height: 35; color: "#e0e0e0"; border.color: "gray"
+                                    Text { text: modelData; anchors.centerIn: parent; font.bold: true }
+                                }
+                                Repeater {
+                                    id: cellsRepeater
+                                    model: currentAlphabet
+                                    Rectangle { width: 100; height: 35; color: "white"; border.color: "gray"
+                                        TextField {
+                                            anchors.fill: parent
+                                            anchors.margins: 2
+                                            text: {
+                                                if (!turingMachine) return ""
+                                                return turingMachine.getTransition(rowsRepeater.model[index], modelData)
+                                            }
+                                            placeholderText: "1,R,q1"
+                                            font.pixelSize: 11
+                                            onEditingFinished: {
+                                                if (!turingMachine) return
+                                                turingMachine.setTransitionString(rowsRepeater.model[index], modelData, text)
                                             }
                                         }
                                     }
@@ -191,85 +162,53 @@ ApplicationWindow {
             }
         }
 
-        // Информация и управление
+        // Управление
         RowLayout {
-            Label { text: "Состояние:" }
-            Label { id: currentStateLabel; text: turingMachine.currentState }
-            Label { text: "Позиция:" }
-            Label { id: headPositionLabel; text: turingMachine.headPosition }
-            Item { Layout.fillWidth: true }
-            Label { text: "Скорость:" }
-            Slider {
-                id: speedSlider
-                from: 1
-                to: 20
-                value: 5
-                onValueChanged: turingMachine.speed = value
-            }
+            Button { text: "Запуск"; onClicked: { if(turingMachine) turingMachine.start() } }
+            Button { text: "Шаг"; onClicked: { if(turingMachine) turingMachine.step() } }
+            Button { text: "Стоп"; onClicked: { if(turingMachine) turingMachine.stop() } }
+            Button { text: "Сброс"; onClicked: { if(turingMachine) turingMachine.reset() } }
+            Text { text: "Состояние: " + (turingMachine ? turingMachine.currentState : "") }
+            Text { text: "Позиция: " + (turingMachine ? turingMachine.headPosition : "") }
         }
+    }
 
-        RowLayout {
-            spacing: 10
-
-            Button {
-                id: runButton
-                text: "Запустить"
-                onClicked: turingMachine.start()
-            }
-
-            Button {
-                id: stepButton
-                text: "Шаг"
-                onClicked: turingMachine.step()
-            }
-
-            Button {
-                id: stopButton
-                text: "Остановить"
-                onClicked: turingMachine.stop()
-            }
-
-            Button {
-                id: resetButton
-                text: "Сброс"
-                onClicked: turingMachine.reset()
-            }
-
-            Item { Layout.fillWidth: true }
-
-            Label {
-                id: statusText
-                text: "Готов"
-                font.italic: true
-            }
-        }
+    function updateTable() {
+        if (!turingMachine) return
+        currentStates = turingMachine.states
+        currentAlphabet = turingMachine.alphabet
+        console.log("Table updated:", JSON.stringify(currentStates), JSON.stringify(currentAlphabet))
     }
 
     Connections {
         target: turingMachine
+        function onStatesChanged() { updateTable() }
+        function onAlphabetChanged() { updateTable() }
         function onTapeChanged() {
             tapeRepeater.model = turingMachine.tape
         }
-        function onHeadPositionChanged() {
-            headPositionLabel.text = turingMachine.headPosition
+    }
+
+    Component.onCompleted: {
+        if (turingMachine) {
+            turingMachine.setAlphabet("01", "")
+            updateTable()
         }
-        function onStateChanged() {
-            currentStateLabel.text = turingMachine.currentState
-        }
-        function onError(message) {
-            statusText.text = "Ошибка: " + message
-        }
-        function onHalted(reason) {
-            statusText.text = "Остановлено: " + reason
-            runButton.enabled = true
-            stepButton.enabled = true
-        }
-        function onRunningChanged() {
-            runButton.enabled = !turingMachine.isRunning
-            stepButton.enabled = !turingMachine.isRunning
-        }
-        function onStatesChanged() {
-            statesRepeater.model = turingMachine.states
+    }
+}
+Button {
+    text: "Λ"
+    font.pixelSize: 16
+    ToolTip.text: "Вставить пустой символ"
+    ToolTip.visible: hovered
+    onClicked: {
+        // Вставить в активное поле ввода
+        if (tapeAlphabetInput.activeFocus) {
+            tapeAlphabetInput.text += "Λ"
+        } else if (extraAlphabetInput.activeFocus) {
+            extraAlphabetInput.text += "Λ"
+        } else if (symbolInput.activeFocus) {
+            symbolInput.text += "Λ"
         }
     }
 }

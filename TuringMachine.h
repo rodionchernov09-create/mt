@@ -7,6 +7,7 @@
 #include <QList>
 #include <QTimer>
 #include <QSet>
+#include <QVariant>
 
 struct Transition {
     QString writeSymbol;
@@ -22,6 +23,8 @@ class TuringMachine : public QObject
     Q_PROPERTY(QString currentState READ getCurrentState NOTIFY stateChanged)
     Q_PROPERTY(bool isRunning READ isRunning NOTIFY runningChanged)
     Q_PROPERTY(int speed READ getSpeed WRITE setSpeed NOTIFY speedChanged)
+    Q_PROPERTY(QVariantList states READ getStates NOTIFY statesChanged)
+    Q_PROPERTY(QVariantList alphabet READ getAlphabet NOTIFY alphabetChanged)
 
 public:
     explicit TuringMachine(QObject *parent = nullptr);
@@ -34,6 +37,17 @@ public:
     int getSpeed() const { return m_speed; }
     void setSpeed(int speed);
 
+    Q_INVOKABLE QVariantList getStates() const {
+        QVariantList list;
+        for (const QString &s : m_states) list.append(s);
+        return list;
+    }
+    Q_INVOKABLE QVariantList getAlphabet() const {
+        QVariantList list;
+        for (const QString &s : m_alphabet) list.append(s);
+        return list;
+    }
+
     // Управление алфавитами и программой
     Q_INVOKABLE void setAlphabet(const QString &tapeAlphabet, const QString &extraAlphabet);
     Q_INVOKABLE void addState();
@@ -44,8 +58,6 @@ public:
                                    const QString &writeSymbol, const QString &move, const QString &nextState);
     Q_INVOKABLE void setTransitionString(const QString &state, const QString &symbol, const QString &value);
     Q_INVOKABLE QString getTransition(const QString &state, const QString &symbol) const;
-    Q_INVOKABLE QStringList getStates() const { return m_states; }
-    Q_INVOKABLE QStringList getAlphabet() const { return m_alphabet; }
     Q_INVOKABLE void clearProgram();
 
     // Управление выполнением
