@@ -1,0 +1,318 @@
+{
+    "classes": [
+        {
+            "className": "TuringMachine",
+            "lineNumber": 17,
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "tapeAlphabet",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "extraAlphabet",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 9,
+                    "lineNumber": 36,
+                    "name": "setAlphabet",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 10,
+                    "lineNumber": 37,
+                    "name": "addState",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 11,
+                    "lineNumber": 38,
+                    "name": "removeState",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "state",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "symbol",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "writeSymbol",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "move",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "nextState",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 12,
+                    "lineNumber": 39,
+                    "name": "setTransition",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "state",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "symbol",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 13,
+                    "isConst": true,
+                    "lineNumber": 41,
+                    "name": "getTransition",
+                    "returnType": "QString"
+                },
+                {
+                    "access": "public",
+                    "index": 14,
+                    "isConst": true,
+                    "lineNumber": 42,
+                    "name": "getStates",
+                    "returnType": "QStringList"
+                },
+                {
+                    "access": "public",
+                    "index": 15,
+                    "isConst": true,
+                    "lineNumber": 43,
+                    "name": "getAlphabet",
+                    "returnType": "QStringList"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "input",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 16,
+                    "lineNumber": 45,
+                    "name": "loadInputString",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "index": 17,
+                    "lineNumber": 46,
+                    "name": "start",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 18,
+                    "lineNumber": 47,
+                    "name": "stop",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 19,
+                    "lineNumber": 48,
+                    "name": "step",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 20,
+                    "lineNumber": 49,
+                    "name": "reset",
+                    "returnType": "void"
+                }
+            ],
+            "object": true,
+            "properties": [
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 0,
+                    "lineNumber": 20,
+                    "name": "tape",
+                    "notify": "tapeChanged",
+                    "read": "getTape",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QStringList",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 1,
+                    "lineNumber": 21,
+                    "name": "headPosition",
+                    "notify": "headPositionChanged",
+                    "read": "getHeadPosition",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 2,
+                    "lineNumber": 22,
+                    "name": "currentState",
+                    "notify": "stateChanged",
+                    "read": "getCurrentState",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "QString",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 3,
+                    "lineNumber": 23,
+                    "name": "isRunning",
+                    "notify": "runningChanged",
+                    "read": "isRunning",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "bool",
+                    "user": false
+                },
+                {
+                    "constant": false,
+                    "designable": true,
+                    "final": false,
+                    "index": 4,
+                    "lineNumber": 24,
+                    "name": "speed",
+                    "notify": "speedChanged",
+                    "read": "getSpeed",
+                    "required": false,
+                    "scriptable": true,
+                    "stored": true,
+                    "type": "int",
+                    "user": false,
+                    "write": "setSpeed"
+                }
+            ],
+            "qualifiedClassName": "TuringMachine",
+            "signals": [
+                {
+                    "access": "public",
+                    "index": 0,
+                    "lineNumber": 52,
+                    "name": "tapeChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 1,
+                    "lineNumber": 53,
+                    "name": "headPositionChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 2,
+                    "lineNumber": 54,
+                    "name": "stateChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 3,
+                    "lineNumber": 55,
+                    "name": "runningChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 4,
+                    "lineNumber": 56,
+                    "name": "speedChanged",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "reason",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 5,
+                    "lineNumber": 57,
+                    "name": "halted",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "direction",
+                            "type": "int"
+                        }
+                    ],
+                    "index": 6,
+                    "lineNumber": 58,
+                    "name": "needScroll",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "message",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 7,
+                    "lineNumber": 59,
+                    "name": "error",
+                    "returnType": "void"
+                }
+            ],
+            "slots": [
+                {
+                    "access": "private",
+                    "index": 8,
+                    "lineNumber": 62,
+                    "name": "executeStep",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "TuringMachine.h",
+    "outputRevision": 69
+}

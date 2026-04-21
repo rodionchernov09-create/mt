@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/Turing/">
+    <file alias="Main.qml">C:/QtProjects/Turing/Main.qml</file>
+  </qresource>
+</RCC>
+

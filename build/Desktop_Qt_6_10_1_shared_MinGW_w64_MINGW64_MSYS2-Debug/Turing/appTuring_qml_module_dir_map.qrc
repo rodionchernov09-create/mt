@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="/Turing">C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debug/Turing</file>
+
+  </qresource>
+</RCC>

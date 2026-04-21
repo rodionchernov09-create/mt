@@ -1,0 +1,9 @@
+-rootPath
+C:/QtProjects/Turing
+-cmake-output
+-output-file
+C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debug/.qt/qml_imports/appTuring_build.cmake
+-importPath
+C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debug
+-importPath
+C:/msys64/mingw64/share/qt6/qml

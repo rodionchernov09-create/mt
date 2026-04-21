@@ -1,0 +1,10 @@
+-I
+C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debug
+-I
+C:/msys64/mingw64/share/qt6/qml
+--resource
+C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debug/.qt/rcc/qmake_Turing.qrc
+--resource
+C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debug/.qt/rcc/appTuring_raw_qml_0.qrc
+--module
+Turing

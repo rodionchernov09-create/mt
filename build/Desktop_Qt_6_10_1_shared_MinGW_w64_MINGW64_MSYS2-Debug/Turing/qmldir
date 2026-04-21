@@ -1,0 +1,6 @@
+module Turing
+typeinfo appTuring.qmltypes
+prefer :/Turing/
+Main 254.0 Main.qml
+depends QtQuick
+
