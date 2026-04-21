@@ -1,21 +1,29 @@
 #include "TuringMachine.h"
 #include <QDebug>
-#include <QThread>
 
 TuringMachine::TuringMachine(QObject *parent)
     : QObject(parent)
     , m_headPosition(0)
     , m_currentState("q0")
     , m_isRunning(false)
-    , m_speed(500)
+    , m_speed(5)
     , m_blankSymbol("Λ")
 {
     m_timer = new QTimer(this);
     m_timer->setSingleShot(false);
     connect(m_timer, &QTimer::timeout, this, &TuringMachine::executeStep);
 
-    // Начальные состояния
     m_states = {"q0"};
+    m_alphabet = {"0", "1", "Λ"};
+}
+
+void TuringMachine::setSpeed(int speed)
+{
+    m_speed = qBound(1, speed, 20);
+    emit speedChanged();
+    if (m_isRunning) {
+        m_timer->start(1000 / m_speed);
+    }
 }
 
 void TuringMachine::setAlphabet(const QString &tapeAlphabet, const QString &extraAlphabet)
@@ -23,7 +31,6 @@ void TuringMachine::setAlphabet(const QString &tapeAlphabet, const QString &extr
     m_alphabet.clear();
     m_blankSymbol = "Λ";
 
-    // Добавляем символы алфавита ленты
     for (QChar ch : tapeAlphabet) {
         QString symbol(ch);
         if (!m_alphabet.contains(symbol) && symbol != m_blankSymbol) {
@@ -31,7 +38,6 @@ void TuringMachine::setAlphabet(const QString &tapeAlphabet, const QString &extr
         }
     }
 
-    // Добавляем дополнительные символы
     for (QChar ch : extraAlphabet) {
         QString symbol(ch);
         if (!m_alphabet.contains(symbol) && symbol != m_blankSymbol) {
@@ -39,11 +45,11 @@ void TuringMachine::setAlphabet(const QString &tapeAlphabet, const QString &extr
         }
     }
 
-    // Добавляем пустой символ
     if (!m_alphabet.contains(m_blankSymbol)) {
         m_alphabet.append(m_blankSymbol);
     }
 
+    emit alphabetChanged();
     qDebug() << "Alphabet set:" << m_alphabet;
 }
 
@@ -51,7 +57,8 @@ void TuringMachine::addState()
 {
     QString newState = "q" + QString::number(m_states.size());
     m_states.append(newState);
-    qDebug() << "Added state:" << newState;
+    emit statesChanged();
+    emit programChanged();
 }
 
 void TuringMachine::removeState()
@@ -59,11 +66,8 @@ void TuringMachine::removeState()
     if (m_states.size() > 1) {
         QString stateToRemove = m_states.last();
         m_states.removeLast();
-
-        // Удаляем все переходы из этого состояния
         m_transitions.remove(stateToRemove);
 
-        // Удаляем переходы в это состояние
         for (auto &stateMap : m_transitions) {
             QList<QString> symbolsToRemove;
             for (auto it = stateMap.begin(); it != stateMap.end(); ++it) {
@@ -76,7 +80,31 @@ void TuringMachine::removeState()
             }
         }
 
-        qDebug() << "Removed state:" << stateToRemove;
+        emit statesChanged();
+        emit programChanged();
+    }
+}
+
+void TuringMachine::addSymbol(const QString &symbol)
+{
+    if (!m_alphabet.contains(symbol) && symbol != "Λ") {
+        m_alphabet.append(symbol);
+        emit alphabetChanged();
+        emit programChanged();
+    }
+}
+
+void TuringMachine::removeSymbol(const QString &symbol)
+{
+    if (symbol != "Λ" && m_alphabet.contains(symbol)) {
+        m_alphabet.removeAll(symbol);
+
+        for (auto &stateMap : m_transitions) {
+            stateMap.remove(symbol);
+        }
+
+        emit alphabetChanged();
+        emit programChanged();
     }
 }
 
@@ -93,9 +121,28 @@ void TuringMachine::setTransition(const QString &state, const QString &symbol,
         return;
     }
 
+    if (move != "L" && move != "R" && move != "S") {
+        emit error("Move must be L, R, or S");
+        return;
+    }
+
     Transition trans{writeSymbol, move, nextState};
     m_transitions[state][symbol] = trans;
-    qDebug() << "Set transition:" << state << symbol << "->" << writeSymbol << move << nextState;
+    emit programChanged();
+}
+
+void TuringMachine::setTransitionString(const QString &state, const QString &symbol, const QString &value)
+{
+    if (value.isEmpty()) {
+        if (m_transitions.contains(state)) {
+            m_transitions[state].remove(symbol);
+        }
+    } else {
+        QStringList parts = value.split(',');
+        if (parts.size() == 3) {
+            setTransition(state, symbol, parts[0], parts[1], parts[2]);
+        }
+    }
 }
 
 QString TuringMachine::getTransition(const QString &state, const QString &symbol) const
@@ -105,6 +152,12 @@ QString TuringMachine::getTransition(const QString &state, const QString &symbol
 
     const Transition &trans = m_transitions[state][symbol];
     return QString("%1,%2,%3").arg(trans.writeSymbol, trans.move, trans.nextState);
+}
+
+void TuringMachine::clearProgram()
+{
+    m_transitions.clear();
+    emit programChanged();
 }
 
 bool TuringMachine::loadInputString(const QString &input)
@@ -123,17 +176,16 @@ void TuringMachine::start()
 {
     if (m_isRunning) return;
 
-    // Проверяем наличие остановки
     bool hasHalt = false;
     for (const QString &state : m_states) {
-        if (state.startsWith("halt") || state == "H") {
+        if (state == "H" || state == "halt") {
             hasHalt = true;
             break;
         }
     }
 
     if (!hasHalt) {
-        emit error("No halt state defined");
+        emit error("No halt state defined (use 'H' as halt state)");
         return;
     }
 
@@ -162,7 +214,6 @@ void TuringMachine::reset()
 {
     stop();
 
-    // Восстанавливаем исходную ленту
     m_tape.clear();
     for (QChar ch : m_originalTape) {
         m_tape.append(QString(ch));
@@ -180,29 +231,17 @@ void TuringMachine::reset()
     emit stateChanged();
 }
 
-void TuringMachine::setSpeed(int speed)
-{
-    m_speed = qBound(1, speed, 20);
-    emit speedChanged();
-
-    if (m_isRunning) {
-        m_timer->start(1000 / m_speed);
-    }
-}
-
 void TuringMachine::executeStep()
 {
-    if (m_currentState.startsWith("halt") || m_currentState == "H") {
+    if (m_currentState == "H" || m_currentState == "halt") {
         stop();
         emit halted("Program finished");
         return;
     }
 
-    // Получаем текущий символ
     QString currentSymbol = (m_headPosition < m_tape.size()) ?
                             m_tape[m_headPosition] : m_blankSymbol;
 
-    // Проверяем наличие перехода
     if (!m_transitions.contains(m_currentState) ||
         !m_transitions[m_currentState].contains(currentSymbol)) {
         stop();
@@ -213,28 +252,22 @@ void TuringMachine::executeStep()
 
     Transition trans = m_transitions[m_currentState][currentSymbol];
 
-    // Записываем символ
     if (m_headPosition >= m_tape.size()) {
         m_tape.append(trans.writeSymbol);
     } else {
         m_tape[m_headPosition] = trans.writeSymbol;
     }
 
-    // Двигаем головку
     moveHead(trans.move);
-
-    // Меняем состояние
     m_currentState = trans.nextState;
 
-    // Обновляем отображение
     emit tapeChanged();
     emit headPositionChanged();
     emit stateChanged();
 
-    // Проверяем необходимость скролла
-    if (m_headPosition < 3) {
+    if (m_headPosition < 2) {
         emit needScroll(-1);
-    } else if (m_headPosition > m_tape.size() - 4) {
+    } else if (m_headPosition > m_tape.size() - 3) {
         emit needScroll(1);
     }
 }
@@ -247,7 +280,6 @@ void TuringMachine::moveHead(const QString &direction)
         m_headPosition--;
         if (m_headPosition < 0) m_headPosition = 0;
     }
-    // "S" - stay, ничего не делаем
 }
 
 bool TuringMachine::validateAlphabet(const QString &input) const
@@ -259,9 +291,4 @@ bool TuringMachine::validateAlphabet(const QString &input) const
         }
     }
     return true;
-}
-
-void TuringMachine::updateTapeDisplay()
-{
-    emit tapeChanged();
 }

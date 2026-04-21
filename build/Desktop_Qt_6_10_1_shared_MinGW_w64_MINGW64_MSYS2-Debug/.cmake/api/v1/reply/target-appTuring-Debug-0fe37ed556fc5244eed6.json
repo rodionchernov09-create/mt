@@ -566,15 +566,15 @@
 	"dependencies" : 
 	[
 		{
+			"backtrace" : 0,
+			"id" : "appTuring_autogen::@6890427a1f51a3e7e1df"
+		},
+		{
 			"backtrace" : 62,
 			"id" : "appTuring_qmlimportscan::@6890427a1f51a3e7e1df"
 		},
 		{
 			"id" : "appTuring_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
-		},
-		{
-			"backtrace" : 0,
-			"id" : "appTuring_autogen::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "appTuring::@6890427a1f51a3e7e1df",
@@ -705,15 +705,15 @@
 			"id" : "Qt6::moc::@6890427a1f51a3e7e1df"
 		},
 		{
+			"backtrace" : 0,
+			"id" : "appTuring_autogen::@6890427a1f51a3e7e1df"
+		},
+		{
 			"backtrace" : 62,
 			"id" : "appTuring_qmlimportscan::@6890427a1f51a3e7e1df"
 		},
 		{
 			"id" : "appTuring_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
-		},
-		{
-			"backtrace" : 0,
-			"id" : "appTuring_autogen::@6890427a1f51a3e7e1df"
 		}
 	],
 	"paths" : 

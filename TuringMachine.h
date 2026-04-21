@@ -26,6 +26,7 @@ class TuringMachine : public QObject
 public:
     explicit TuringMachine(QObject *parent = nullptr);
 
+    // Геттеры
     QStringList getTape() const { return m_tape; }
     int getHeadPosition() const { return m_headPosition; }
     QString getCurrentState() const { return m_currentState; }
@@ -33,15 +34,21 @@ public:
     int getSpeed() const { return m_speed; }
     void setSpeed(int speed);
 
+    // Управление алфавитами и программой
     Q_INVOKABLE void setAlphabet(const QString &tapeAlphabet, const QString &extraAlphabet);
     Q_INVOKABLE void addState();
     Q_INVOKABLE void removeState();
+    Q_INVOKABLE void addSymbol(const QString &symbol);
+    Q_INVOKABLE void removeSymbol(const QString &symbol);
     Q_INVOKABLE void setTransition(const QString &state, const QString &symbol,
                                    const QString &writeSymbol, const QString &move, const QString &nextState);
+    Q_INVOKABLE void setTransitionString(const QString &state, const QString &symbol, const QString &value);
     Q_INVOKABLE QString getTransition(const QString &state, const QString &symbol) const;
     Q_INVOKABLE QStringList getStates() const { return m_states; }
     Q_INVOKABLE QStringList getAlphabet() const { return m_alphabet; }
+    Q_INVOKABLE void clearProgram();
 
+    // Управление выполнением
     Q_INVOKABLE bool loadInputString(const QString &input);
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();
@@ -55,8 +62,11 @@ signals:
     void runningChanged();
     void speedChanged();
     void halted(const QString &reason);
-    void needScroll(int direction); // -1 left, 1 right
+    void needScroll(int direction);
     void error(const QString &message);
+    void statesChanged();
+    void alphabetChanged();
+    void programChanged();
 
 private slots:
     void executeStep();
@@ -77,7 +87,6 @@ private:
     int m_originalHeadPosition;
 
     bool validateAlphabet(const QString &input) const;
-    void updateTapeDisplay();
     void moveHead(const QString &direction);
 };
 

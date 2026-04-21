@@ -1,8 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-// Удалите import QtQuick.Dialogs
-// Удалите import Turing 1.0
 
 ApplicationWindow {
     id: mainWindow
@@ -10,8 +8,6 @@ ApplicationWindow {
     width: 1200
     height: 800
     title: "Эмулятор Машины Тьюринга"
-
-    // Используем turingMachine из контекста (не создаём новый)
 
     ColumnLayout {
         anchors.fill: parent
@@ -66,6 +62,8 @@ ApplicationWindow {
                 anchors.fill: parent
                 clip: true
 
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
+
                 Row {
                     id: tapeRow
                     spacing: 2
@@ -113,17 +111,94 @@ ApplicationWindow {
             }
         }
 
-        // Информация
+        // Таблица программы (упрощённая версия)
+        GroupBox {
+            title: "Программа машины Тьюринга"
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            ColumnLayout {
+                anchors.fill: parent
+                spacing: 5
+
+                RowLayout {
+                    Button {
+                        text: "+ Состояние"
+                        onClicked: turingMachine.addState()
+                    }
+                    Button {
+                        text: "- Состояние"
+                        onClicked: turingMachine.removeState()
+                    }
+                    Item { Layout.fillWidth: true }
+                }
+
+                ScrollView {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    clip: true
+
+                    Column {
+                        Repeater {
+                            id: statesRepeater
+                            model: turingMachine.states
+
+                            delegate: Rectangle {
+                                width: 600
+                                height: 30
+                                color: "transparent"
+
+                                Row {
+                                    Rectangle {
+                                        width: 80
+                                        height: 30
+                                        color: "#e0e0e0"
+                                        border.color: "gray"
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: modelData
+                                            font.bold: true
+                                        }
+                                    }
+
+                                    Repeater {
+                                        model: turingMachine.alphabet
+
+                                        delegate: Rectangle {
+                                            width: 100
+                                            height: 30
+                                            color: "white"
+                                            border.color: "gray"
+
+                                            TextField {
+                                                anchors.fill: parent
+                                                anchors.margins: 2
+                                                text: turingMachine.getTransition(statesRepeater.model[index], modelData)
+                                                placeholderText: "символ,R,q1"
+                                                font.pixelSize: 11
+
+                                                onEditingFinished: {
+                                                    turingMachine.setTransitionString(statesRepeater.model[index], modelData, text)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Информация и управление
         RowLayout {
             Label { text: "Состояние:" }
             Label { id: currentStateLabel; text: turingMachine.currentState }
             Label { text: "Позиция:" }
             Label { id: headPositionLabel; text: turingMachine.headPosition }
             Item { Layout.fillWidth: true }
-            Label {
-                id: speedLabel
-                text: "Скорость: " + turingMachine.speed
-            }
+            Label { text: "Скорость:" }
             Slider {
                 id: speedSlider
                 from: 1
@@ -133,43 +208,31 @@ ApplicationWindow {
             }
         }
 
-        // Кнопки управления
         RowLayout {
             spacing: 10
 
             Button {
                 id: runButton
                 text: "Запустить"
-                onClicked: {
-                    turingMachine.start()
-                    statusText.text = "Выполнение..."
-                }
+                onClicked: turingMachine.start()
             }
 
             Button {
                 id: stepButton
                 text: "Шаг"
-                onClicked: {
-                    turingMachine.step()
-                }
+                onClicked: turingMachine.step()
             }
 
             Button {
                 id: stopButton
                 text: "Остановить"
-                onClicked: {
-                    turingMachine.stop()
-                    statusText.text = "Остановлено"
-                }
+                onClicked: turingMachine.stop()
             }
 
             Button {
                 id: resetButton
                 text: "Сброс"
-                onClicked: {
-                    turingMachine.reset()
-                    statusText.text = "Сброшено"
-                }
+                onClicked: turingMachine.reset()
             }
 
             Item { Layout.fillWidth: true }
@@ -182,7 +245,6 @@ ApplicationWindow {
         }
     }
 
-    // Обновление отображения
     Connections {
         target: turingMachine
         function onTapeChanged() {
@@ -190,14 +252,6 @@ ApplicationWindow {
         }
         function onHeadPositionChanged() {
             headPositionLabel.text = turingMachine.headPosition
-            // Прокрутка
-            if (turingMachine.headPosition < 2) {
-                tapeScrollView.contentX = 0
-            } else if (turingMachine.headPosition > tapeRepeater.count - 3) {
-                tapeScrollView.contentX = (tapeRepeater.count - 5) * 62
-            } else {
-                tapeScrollView.contentX = (turingMachine.headPosition - 2) * 62
-            }
         }
         function onStateChanged() {
             currentStateLabel.text = turingMachine.currentState
@@ -207,6 +261,15 @@ ApplicationWindow {
         }
         function onHalted(reason) {
             statusText.text = "Остановлено: " + reason
+            runButton.enabled = true
+            stepButton.enabled = true
+        }
+        function onRunningChanged() {
+            runButton.enabled = !turingMachine.isRunning
+            stepButton.enabled = !turingMachine.isRunning
+        }
+        function onStatesChanged() {
+            statesRepeater.model = turingMachine.states
         }
     }
 }
