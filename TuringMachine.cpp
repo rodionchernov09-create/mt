@@ -144,7 +144,6 @@ void TuringMachine::setTransitionString(const QString &state, const QString &sym
             qDebug() << "Removed transition";
         }
     } else {
-        // Правильно парсим строку: "a,R,q0"
         QStringList parts = value.split(',');
         if (parts.size() == 3) {
             QString writeSymbol = parts[0].trimmed();
@@ -153,7 +152,6 @@ void TuringMachine::setTransitionString(const QString &state, const QString &sym
 
             qDebug() << "Parsed: write=" << writeSymbol << "move=" << move << "next=" << nextState;
 
-            // Проверяем корректность
             if (move != "R" && move != "L" && move != "S") {
                 emit error("Move must be R, L, or S");
                 return;
@@ -170,19 +168,11 @@ void TuringMachine::setTransitionString(const QString &state, const QString &sym
 
 QString TuringMachine::getTransition(const QString &state, const QString &symbol) const
 {
-    if (!m_transitions.contains(state)) {
-        qDebug() << "getTransition: No state" << state;
-        return "";
-    }
-    if (!m_transitions[state].contains(symbol)) {
-        qDebug() << "getTransition: No symbol" << symbol << "for state" << state;
-        return "";
-    }
+    if (!m_transitions.contains(state)) return "";
+    if (!m_transitions[state].contains(symbol)) return "";
 
     const Transition &trans = m_transitions[state][symbol];
-    QString result = QString("%1,%2,%3").arg(trans.writeSymbol, trans.move, trans.nextState);
-    qDebug() << "getTransition:" << state << symbol << "->" << result;
-    return result;
+    return QString("%1,%2,%3").arg(trans.writeSymbol, trans.move, trans.nextState);
 }
 
 void TuringMachine::clearProgram()
@@ -260,11 +250,19 @@ void TuringMachine::executeStep()
         return;
     }
 
+    // РАСШИРЯЕМ ЛЕНТУ ЕСЛИ ГОЛОВКА ВЫШЛА ЗА ГРАНИЦЫ
     QString currentSymbol;
-    if (m_headPosition < m_tape.size()) {
-        currentSymbol = m_tape[m_headPosition];
-    } else {
+    if (m_headPosition < 0) {
+        m_tape.prepend(m_blankSymbol);
+        m_headPosition = 0;
         currentSymbol = m_blankSymbol;
+        qDebug() << "Extended left, new size:" << m_tape.size();
+    } else if (m_headPosition >= m_tape.size()) {
+        m_tape.append(m_blankSymbol);
+        currentSymbol = m_blankSymbol;
+        qDebug() << "Extended right, new size:" << m_tape.size();
+    } else {
+        currentSymbol = m_tape[m_headPosition];
     }
 
     qDebug() << "Current symbol:" << currentSymbol;
@@ -293,6 +291,9 @@ void TuringMachine::executeStep()
     // Записываем символ
     if (m_headPosition >= m_tape.size()) {
         m_tape.append(trans.writeSymbol);
+    } else if (m_headPosition < 0) {
+        m_tape.prepend(trans.writeSymbol);
+        m_headPosition = 0;
     } else {
         m_tape[m_headPosition] = trans.writeSymbol;
     }
@@ -302,7 +303,6 @@ void TuringMachine::executeStep()
         m_headPosition++;
     } else if (trans.move == "L") {
         m_headPosition--;
-        if (m_headPosition < 0) m_headPosition = 0;
     }
 
     // Меняем состояние
@@ -310,6 +310,7 @@ void TuringMachine::executeStep()
 
     qDebug() << "New state:" << m_currentState;
     qDebug() << "New head position:" << m_headPosition;
+    qDebug() << "Tape size:" << m_tape.size();
 
     emit tapeChanged();
     emit headPositionChanged();

@@ -5,7 +5,7 @@ import QtQuick.Layouts
 ApplicationWindow {
     id: mainWindow
     visible: true
-    width: 1100
+    width: 1200
     height: 800
     title: "Эмулятор Машины Тьюринга"
 
@@ -13,6 +13,8 @@ ApplicationWindow {
     property var currentAlphabet: []
     property var activeCellInput: null
     property string statusMessage: "Готов"
+
+    property var tapeModel: []
 
     ColumnLayout {
         anchors.fill: parent
@@ -49,12 +51,13 @@ ApplicationWindow {
                     onClicked: {
                         turingMachine.setAlphabet(tapeAlphabetInput.text, extraAlphabetInput.text)
                         statusMessage = "Алфавиты заданы"
+                        updateTableData()
                     }
                 }
             }
         }
 
-        // Лента с треугольной головкой
+        // Лента
         GroupBox {
             title: "Лента"
             Layout.fillWidth: true
@@ -64,97 +67,107 @@ ApplicationWindow {
                 anchors.fill: parent
                 color: "white"
 
-                ScrollView {
-                    id: tapeScrollView
+                RowLayout {
                     anchors.fill: parent
-                    clip: true
+                    spacing: 5
 
-                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
-                    ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+                    Rectangle {
+                        width: 30
+                        height: 60
+                        color: "#d0d0d0"
+                        radius: 5
+                        Text { anchors.centerIn: parent; text: "◀"; font.pixelSize: 20 }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: tapeListView.contentX -= 100
+                        }
+                    }
 
-                    Item {
-                        width: Math.max(tapeRow.width + 50, tapeScrollView.width - 10)
-                        height: 80
+                    ListView {
+                        id: tapeListView
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        orientation: ListView.Horizontal
+                        spacing: 2
+                        clip: true
 
-                        Row {
-                            id: tapeRow
-                            spacing: 2
-                            y: 10
+                        model: tapeModel
 
-                            Repeater {
-                                id: tapeRepeater
-                                model: turingMachine ? turingMachine.tape : []
-                                delegate: Rectangle {
-                                    width: 60
-                                    height: 60
-                                    border.color: "black"
-                                    border.width: 2
-                                    color: "white"
+                        delegate: Rectangle {
+                            width: 60
+                            height: 60
+                            border.color: "black"
+                            border.width: 2
+                            color: index === turingMachine.headPosition ? "#ffffcc" : "white"
 
-                                    Text {
-                                        anchors.centerIn: parent
-                                        text: modelData
-                                        font.pixelSize: 24
-                                        font.family: "Courier"
-                                    }
-                                }
+                            Text {
+                                anchors.centerIn: parent
+                                text: modelData
+                                font.pixelSize: 24
+                                font.family: "Courier"
                             }
                         }
+                    }
 
-                        // Треугольная головка (перевёрнутая, вершиной вниз)
-                        Canvas {
-                            id: headCanvas
-                            width: 30
-                            height: 30
+                    Rectangle {
+                        width: 30
+                        height: 60
+                        color: "#d0d0d0"
+                        radius: 5
+                        Text { anchors.centerIn: parent; text: "▶"; font.pixelSize: 20 }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: tapeListView.contentX += 100
+                        }
+                    }
+                }
 
-                            property int targetX: (turingMachine ? turingMachine.headPosition : 0) * 62 + 15
+                // Каретка СНИЗУ ленты, острым концом ВВЕРХ
+                Canvas {
+                    id: headCanvas
+                    width: 30
+                    height: 25
 
-                            Behavior on x {
-                                NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
+                    x: {
+                        if (!turingMachine) return 0
+                        var headPos = turingMachine.headPosition
+                        var scrollOffset = tapeListView.contentX
+                        var itemX = headPos * 62 + 15
+                        return itemX - scrollOffset + 35
+                    }
+                    y: 65  // Смещаем вниз, под ленту
+
+                    Behavior on x {
+                        NumberAnimation { duration: 150; easing.type: Easing.InOutQuad }
+                    }
+
+                    onPaint: {
+                        var ctx = getContext("2d")
+                        ctx.clearRect(0, 0, width, height)
+                        ctx.fillStyle = "red"
+                        ctx.beginPath()
+                        ctx.moveTo(width / 2, 0)   // вершина вверху (указывает на ячейку)
+                        ctx.lineTo(0, height)       // левый нижний
+                        ctx.lineTo(width, height)   // правый нижний
+                        ctx.closePath()
+                        ctx.fill()
+                    }
+
+                    Connections {
+                        target: turingMachine
+                        function onHeadPositionChanged() {
+                            headCanvas.update()
+                            var headPos = turingMachine.headPosition
+                            var viewWidth = tapeListView.width
+                            var currentScroll = tapeListView.contentX
+                            var headScreenPos = headPos * 62 + 15 - currentScroll
+
+                            if (headScreenPos > viewWidth - 100) {
+                                tapeListView.contentX = headPos * 62 + 15 - viewWidth + 80
+                            } else if (headScreenPos < 100) {
+                                tapeListView.contentX = headPos * 62 + 15 - 80
                             }
-
-                            x: targetX
-                            y: -5
-
-                            onPaint: {
-                                var ctx = getContext("2d")
-                                ctx.clearRect(0, 0, width, height)
-                                ctx.fillStyle = "red"
-                                ctx.beginPath()
-                                // Перевёрнутый треугольник (вершиной вниз)
-                                ctx.moveTo(width / 2, height)
-                                ctx.lineTo(0, 0)
-                                ctx.lineTo(width, 0)
-                                ctx.closePath()
-                                ctx.fill()
-                            }
-
-                            Connections {
-                                target: turingMachine
-                                function onHeadPositionChanged() {
-                                    var newPos = turingMachine.headPosition * 62 + 15
-                                    targetX = newPos
-
-                                    // Автоматическая прокрутка
-                                    var viewWidth = tapeScrollView.width
-                                    var currentScroll = tapeScrollView.contentItem.x
-                                    var headScreenPos = newPos + currentScroll
-
-                                    if (headScreenPos > viewWidth - 100) {
-                                        tapeScrollView.contentItem.x = -(newPos - viewWidth + 80)
-                                    } else if (headScreenPos < 100) {
-                                        tapeScrollView.contentItem.x = -(newPos - 50)
-                                    }
-
-                                    if (tapeScrollView.contentItem.x > 0) {
-                                        tapeScrollView.contentItem.x = 0
-                                    }
-                                    var maxScroll = -(tapeRow.width + 50 - viewWidth)
-                                    if (tapeScrollView.contentItem.x < maxScroll) {
-                                        tapeScrollView.contentItem.x = maxScroll
-                                    }
-                                }
-                            }
+                            if (tapeListView.contentX < 0) tapeListView.contentX = 0
                         }
                     }
                 }
@@ -175,6 +188,9 @@ ApplicationWindow {
                 onClicked: {
                     if (turingMachine && turingMachine.loadInputString(inputStringField.text)) {
                         statusMessage = "Строка загружена"
+                        updateTapeModel()
+                        tapeListView.contentX = 0
+                        headCanvas.update()
                     }
                 }
             }
@@ -187,54 +203,43 @@ ApplicationWindow {
             Layout.fillHeight: true
 
             ColumnLayout {
-                spacing: 5
+                anchors.fill: parent
 
                 RowLayout {
-                    Button { text: "+ Состояние"; onClicked: { if(turingMachine) turingMachine.addState() } }
-                    Button { text: "- Состояние"; onClicked: { if(turingMachine) turingMachine.removeState() } }
-                    Button { text: "H (halt)"; onClicked: { if(turingMachine) turingMachine.addHaltState() } }
-
-                    Rectangle { width: 20; color: "transparent" }
-
-                    Label { text: "Добавить символ:"; font.bold: true }
-                    TextField {
-                        id: symbolInput
-                        placeholderText: "Символ"
-                        width: 60
-                    }
-                    Button {
-                        text: "+ Добавить"
-                        onClicked: {
-                            if(turingMachine && symbolInput.text) {
-                                turingMachine.addSymbol(symbolInput.text)
-                                symbolInput.text = ""
-                            }
-                        }
-                    }
-
-                    Rectangle { width: 20; color: "transparent" }
-
-                    Label { text: "Быстрый ввод:"; font.bold: true }
-                    Button { text: "Λ"; onClicked: { if (activeCellInput) activeCellInput.text += "Λ" } }
-                    Button { text: "R"; onClicked: { if (activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,R,q1"; else activeCellInput.text = t.replace(/,.,/, ",R,") } } }
-                    Button { text: "L"; onClicked: { if (activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,L,q1"; else activeCellInput.text = t.replace(/,.,/, ",L,") } } }
-                    Button { text: "S"; onClicked: { if (activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,S,q1"; else activeCellInput.text = t.replace(/,.,/, ",S,") } } }
+                    Button { text: "+ Состояние"; onClicked: { if(turingMachine) turingMachine.addState(); updateTableData() } }
+                    Button { text: "- Состояние"; onClicked: { if(turingMachine) turingMachine.removeState(); updateTableData() } }
+                    Button { text: "+ Символ"; onClicked: { if(turingMachine && symbolAdd.text) turingMachine.addSymbol(symbolAdd.text); updateTableData() } }
+                    TextField { id: symbolAdd; width: 50; placeholderText: "символ" }
+                    Button { text: "- Символ"; onClicked: { if(turingMachine && symbolAdd.text) turingMachine.removeSymbol(symbolAdd.text); updateTableData() } }
+                    Button { text: "H (halt)"; onClicked: { if(turingMachine) turingMachine.addHaltState(); updateTableData() } }
 
                     Item { Layout.fillWidth: true }
 
-                    Label { text: "Формат: символ,R/L/S,состояние"; color: "gray"; font.pixelSize: 10 }
+                    Label { text: "Быстрый ввод:" }
+                    Button { text: "Λ"; onClicked: { if(activeCellInput) activeCellInput.text += "Λ" } }
+                    Button { text: "R"; onClicked: { if(activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,R,q1"; else activeCellInput.text = t.replace(/,.,/, ",R,") } } }
+                    Button { text: "L"; onClicked: { if(activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,L,q1"; else activeCellInput.text = t.replace(/,.,/, ",L,") } } }
+                    Button { text: "S"; onClicked: { if(activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,S,q1"; else activeCellInput.text = t.replace(/,.,/, ",S,") } } }
                 }
 
+                // Один ScrollView с двумя скроллбарами
                 ScrollView {
+                    id: tableScrollView
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     clip: true
 
+                    ScrollBar.horizontal.policy: ScrollBar.AlwaysOn
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+
+                    // Просто Column без лишних вложений
                     Column {
-                        id: tableContainer
+                        id: tableColumn
 
                         // Заголовок
                         Row {
+                            spacing: 0
+
                             Rectangle { width: 80; height: 35; color: "#d0d0d0"; border.color: "gray"
                                 Text { text: "Состояние"; anchors.centerIn: parent; font.bold: true }
                             }
@@ -247,53 +252,35 @@ ApplicationWindow {
                             }
                         }
 
-                        // Строки состояний - каждая строка независима
+                        // Строки
                         Repeater {
                             id: rowsRepeater
                             model: currentStates
 
                             Row {
-                                id: stateRow
+                                spacing: 0
                                 property string stateName: modelData
 
                                 Rectangle { width: 80; height: 40; color: "#e0e0e0"; border.color: "gray"
                                     Text { text: stateName; anchors.centerIn: parent; font.bold: true }
                                 }
-
                                 Repeater {
                                     model: currentAlphabet
-
-                                    Rectangle {
-                                        width: 100; height: 40; color: "white"; border.color: "gray"
-
+                                    Rectangle { width: 100; height: 40; color: "white"; border.color: "gray"
                                         TextField {
-                                            id: cellField
-                                            width: parent.width
-                                            height: parent.height
+                                            anchors.fill: parent
                                             anchors.margins: 2
-
-                                            property string myState: stateRow.stateName
-                                            property string mySymbol: modelData
-
-                                            text: {
-                                                if (!turingMachine) return ""
-                                                return turingMachine.getTransition(myState, mySymbol)
-                                            }
-
+                                            text: turingMachine ? turingMachine.getTransition(stateName, modelData) : ""
                                             placeholderText: "a,R,q0"
                                             font.pixelSize: 11
-
-                                            onActiveFocusChanged: {
-                                                if (activeFocus) {
-                                                    activeCellInput = this
+                                            onEditingFinished: {
+                                                if (turingMachine) {
+                                                    turingMachine.setTransitionString(stateName, modelData, text)
+                                                    statusMessage = "✓ " + stateName + "," + modelData + " → " + text
                                                 }
                                             }
-
-                                            onEditingFinished: {
-                                                if (!turingMachine) return
-                                                console.log("Saving:", myState, mySymbol, "=", text)
-                                                turingMachine.setTransitionString(myState, mySymbol, text)
-                                                statusMessage = "✓ " + myState + "," + mySymbol + " → " + text
+                                            onActiveFocusChanged: {
+                                                if (activeFocus) activeCellInput = this
                                             }
                                         }
                                     }
@@ -321,7 +308,15 @@ ApplicationWindow {
                     Button { text: "▶ Запуск"; onClicked: { if(turingMachine) turingMachine.start() } }
                     Button { text: "⏸ Шаг"; onClicked: { if(turingMachine) turingMachine.step() } }
                     Button { text: "⏹ Стоп"; onClicked: { if(turingMachine) turingMachine.stop() } }
-                    Button { text: "⟳ Сброс"; onClicked: { if(turingMachine) turingMachine.reset() } }
+                    Button { text: "⟳ Сброс"; onClicked: {
+                        if(turingMachine) {
+                            turingMachine.reset()
+                            updateTapeModel()
+                            tapeListView.contentX = 0
+                            headCanvas.update()
+                            statusMessage = "Выполнение сброшено"
+                        }
+                    } }
 
                     Rectangle { width: 20; color: "transparent" }
 
@@ -340,27 +335,6 @@ ApplicationWindow {
                         onValueChanged: { if (turingMachine) turingMachine.speed = value }
                     }
                     Text { text: speedSlider.value.toFixed(0); width: 25 }
-
-                    // Кнопки прокрутки ленты
-                    Button {
-                        text: "◀"
-                        width: 30
-                        ToolTip.text: "Прокрутить ленту влево"
-                        onClicked: {
-                            tapeScrollView.contentItem.x += 80
-                            if (tapeScrollView.contentItem.x > 0) tapeScrollView.contentItem.x = 0
-                        }
-                    }
-                    Button {
-                        text: "▶"
-                        width: 30
-                        ToolTip.text: "Прокрутить ленту вправо"
-                        onClicked: {
-                            var maxScroll = -(tapeRow.width + 50 - tapeScrollView.width)
-                            tapeScrollView.contentItem.x -= 80
-                            if (tapeScrollView.contentItem.x < maxScroll) tapeScrollView.contentItem.x = maxScroll
-                        }
-                    }
                 }
 
                 Text {
@@ -373,19 +347,30 @@ ApplicationWindow {
         }
     }
 
-    function updateTable() {
+    function updateTapeModel() {
+        if (!turingMachine) return
+        var newModel = []
+        for (var i = 0; i < turingMachine.tape.length; i++) {
+            newModel.push(turingMachine.tape[i])
+        }
+        tapeModel = newModel
+    }
+
+    function updateTableData() {
         if (!turingMachine) return
         currentStates = turingMachine.states
         currentAlphabet = turingMachine.alphabet
-        console.log("Table updated. States:", JSON.stringify(currentStates))
-        console.log("Alphabet:", JSON.stringify(currentAlphabet))
+        console.log("States:", currentStates.length, "Alphabet:", currentAlphabet.length)
     }
 
     Connections {
         target: turingMachine
-        function onStatesChanged() { updateTable() }
-        function onAlphabetChanged() { updateTable() }
-        function onTapeChanged() { tapeRepeater.model = turingMachine.tape }
+        function onStatesChanged() { updateTableData() }
+        function onAlphabetChanged() { updateTableData() }
+        function onTapeChanged() {
+            updateTapeModel()
+            headCanvas.update()
+        }
         function onError(message) { statusMessage = "Ошибка: " + message; statusTextDisplay.color = "red" }
         function onHalted(reason) { statusMessage = "Остановлено: " + reason; statusTextDisplay.color = "orange" }
         function onRunningChanged() {
@@ -402,8 +387,9 @@ ApplicationWindow {
     Component.onCompleted: {
         if (turingMachine) {
             turingMachine.setAlphabet("abΛ", "")
-            updateTable()
-            statusMessage = "Готов. Алфавит: a, b, Λ"
+            updateTableData()
+            updateTapeModel()
+            statusMessage = "Готов"
         }
     }
 }
