@@ -13,8 +13,22 @@ TuringMachine::TuringMachine(QObject *parent)
     m_timer->setSingleShot(false);
     connect(m_timer, &QTimer::timeout, this, &TuringMachine::executeStep);
 
-    m_states = {"q0"};
-    m_alphabet = {"0", "1", "Λ"};
+    m_states = QStringList() << "q0";
+    m_alphabet = QStringList() << "a" << "b" << "Λ";
+}
+
+QVariantList TuringMachine::getStates() const
+{
+    QVariantList list;
+    for (const QString &s : m_states) list.append(s);
+    return list;
+}
+
+QVariantList TuringMachine::getAlphabet() const
+{
+    QVariantList list;
+    for (const QString &s : m_alphabet) list.append(s);
+    return list;
 }
 
 void TuringMachine::setSpeed(int speed)
@@ -29,37 +43,35 @@ void TuringMachine::setSpeed(int speed)
 void TuringMachine::setAlphabet(const QString &tapeAlphabet, const QString &extraAlphabet)
 {
     m_alphabet.clear();
-    m_blankSymbol = "Λ";
 
     for (QChar ch : tapeAlphabet) {
         QString symbol(ch);
-        if (!m_alphabet.contains(symbol) && symbol != m_blankSymbol) {
+        if (!m_alphabet.contains(symbol)) {
             m_alphabet.append(symbol);
         }
     }
 
     for (QChar ch : extraAlphabet) {
         QString symbol(ch);
-        if (!m_alphabet.contains(symbol) && symbol != m_blankSymbol) {
+        if (!m_alphabet.contains(symbol)) {
             m_alphabet.append(symbol);
         }
     }
 
-    if (!m_alphabet.contains(m_blankSymbol)) {
-        m_alphabet.append(m_blankSymbol);
+    if (!m_alphabet.contains("Λ")) {
+        m_alphabet.append("Λ");
     }
 
     emit alphabetChanged();
-    qDebug() << "Alphabet set:" << m_alphabet;
+    qDebug() << "Alphabet:" << m_alphabet;
 }
 
 void TuringMachine::addState()
 {
     QString newState = "q" + QString::number(m_states.size());
     m_states.append(newState);
-    qDebug() << "Added state:" << newState << "Total states:" << m_states;
+    qDebug() << "Added state:" << newState;
     emit statesChanged();
-    emit programChanged();
 }
 
 void TuringMachine::removeState()
@@ -68,21 +80,16 @@ void TuringMachine::removeState()
         QString stateToRemove = m_states.last();
         m_states.removeLast();
         m_transitions.remove(stateToRemove);
-
-        for (auto &stateMap : m_transitions) {
-            QList<QString> symbolsToRemove;
-            for (auto it = stateMap.begin(); it != stateMap.end(); ++it) {
-                if (it.value().nextState == stateToRemove) {
-                    symbolsToRemove.append(it.key());
-                }
-            }
-            for (const QString &symbol : symbolsToRemove) {
-                stateMap.remove(symbol);
-            }
-        }
-
         emit statesChanged();
-        emit programChanged();
+    }
+}
+
+void TuringMachine::addHaltState()
+{
+    if (!m_states.contains("H")) {
+        m_states.append("H");
+        qDebug() << "Added halt state: H";
+        emit statesChanged();
     }
 }
 
@@ -90,9 +97,8 @@ void TuringMachine::addSymbol(const QString &symbol)
 {
     if (!m_alphabet.contains(symbol) && symbol != "Λ") {
         m_alphabet.append(symbol);
-        qDebug() << "Added symbol:" << symbol << "Total symbols:" << m_alphabet;
+        qDebug() << "Added symbol:" << symbol;
         emit alphabetChanged();
-        emit programChanged();
     }
 }
 
@@ -100,51 +106,63 @@ void TuringMachine::removeSymbol(const QString &symbol)
 {
     if (symbol != "Λ" && m_alphabet.contains(symbol)) {
         m_alphabet.removeAll(symbol);
-
-        for (auto &stateMap : m_transitions) {
-            stateMap.remove(symbol);
-        }
-
         emit alphabetChanged();
-        emit programChanged();
     }
 }
 
 void TuringMachine::setTransition(const QString &state, const QString &symbol,
                                   const QString &writeSymbol, const QString &move, const QString &nextState)
 {
-    if (!m_states.contains(state) || !m_states.contains(nextState)) {
-        emit error("Invalid state");
-        return;
-    }
+    qDebug() << "=== setTransition ===";
+    qDebug() << "State:" << state;
+    qDebug() << "Read symbol:" << symbol;
+    qDebug() << "Write symbol:" << writeSymbol;
+    qDebug() << "Move:" << move;
+    qDebug() << "Next state:" << nextState;
 
-    if (!m_alphabet.contains(symbol) || !m_alphabet.contains(writeSymbol)) {
-        emit error("Invalid symbol");
-        return;
-    }
+    Transition trans;
+    trans.writeSymbol = writeSymbol;
+    trans.move = move;
+    trans.nextState = nextState;
 
-    if (move != "L" && move != "R" && move != "S") {
-        emit error("Move must be L, R, or S");
-        return;
-    }
-
-    Transition trans{writeSymbol, move, nextState};
     m_transitions[state][symbol] = trans;
+
+    qDebug() << "Transition saved successfully!";
     emit programChanged();
 }
 
 void TuringMachine::setTransitionString(const QString &state, const QString &symbol, const QString &value)
 {
+    qDebug() << "=== setTransitionString ===";
+    qDebug() << "State:" << state;
+    qDebug() << "Symbol:" << symbol;
+    qDebug() << "Value:" << value;
+
     if (value.isEmpty()) {
         if (m_transitions.contains(state)) {
             m_transitions[state].remove(symbol);
+            qDebug() << "Removed transition";
         }
     } else {
+        // Правильно парсим строку: "a,R,q0"
         QStringList parts = value.split(',');
         if (parts.size() == 3) {
-            setTransition(state, symbol, parts[0], parts[1], parts[2]);
+            QString writeSymbol = parts[0].trimmed();
+            QString move = parts[1].trimmed();
+            QString nextState = parts[2].trimmed();
+
+            qDebug() << "Parsed: write=" << writeSymbol << "move=" << move << "next=" << nextState;
+
+            // Проверяем корректность
+            if (move != "R" && move != "L" && move != "S") {
+                emit error("Move must be R, L, or S");
+                return;
+            }
+
+            setTransition(state, symbol, writeSymbol, move, nextState);
         } else {
-            emit error("Invalid format. Use: символ,движение,состояние");
+            qDebug() << "ERROR: Invalid format, parts count =" << parts.size();
+            emit error("Invalid format. Use: символ,движение,состояние (пример: a,R,q0)");
         }
     }
     emit programChanged();
@@ -152,11 +170,19 @@ void TuringMachine::setTransitionString(const QString &state, const QString &sym
 
 QString TuringMachine::getTransition(const QString &state, const QString &symbol) const
 {
-    if (!m_transitions.contains(state)) return "";
-    if (!m_transitions[state].contains(symbol)) return "";
+    if (!m_transitions.contains(state)) {
+        qDebug() << "getTransition: No state" << state;
+        return "";
+    }
+    if (!m_transitions[state].contains(symbol)) {
+        qDebug() << "getTransition: No symbol" << symbol << "for state" << state;
+        return "";
+    }
 
     const Transition &trans = m_transitions[state][symbol];
-    return QString("%1,%2,%3").arg(trans.writeSymbol, trans.move, trans.nextState);
+    QString result = QString("%1,%2,%3").arg(trans.writeSymbol, trans.move, trans.nextState);
+    qDebug() << "getTransition:" << state << symbol << "->" << result;
+    return result;
 }
 
 void TuringMachine::clearProgram()
@@ -180,19 +206,6 @@ bool TuringMachine::loadInputString(const QString &input)
 void TuringMachine::start()
 {
     if (m_isRunning) return;
-
-    bool hasHalt = false;
-    for (const QString &state : m_states) {
-        if (state == "H" || state == "halt") {
-            hasHalt = true;
-            break;
-        }
-    }
-
-    if (!hasHalt) {
-        emit error("No halt state defined (use 'H' as halt state)");
-        return;
-    }
 
     m_isRunning = true;
     emit runningChanged();
@@ -238,60 +251,77 @@ void TuringMachine::reset()
 
 void TuringMachine::executeStep()
 {
-    if (m_currentState == "H" || m_currentState == "halt") {
+    qDebug() << "========================================";
+    qDebug() << "Current state:" << m_currentState;
+
+    if (m_currentState == "H") {
         stop();
         emit halted("Program finished");
         return;
     }
 
-    QString currentSymbol = (m_headPosition < m_tape.size()) ?
-                            m_tape[m_headPosition] : m_blankSymbol;
+    QString currentSymbol;
+    if (m_headPosition < m_tape.size()) {
+        currentSymbol = m_tape[m_headPosition];
+    } else {
+        currentSymbol = m_blankSymbol;
+    }
 
-    if (!m_transitions.contains(m_currentState) ||
-        !m_transitions[m_currentState].contains(currentSymbol)) {
+    qDebug() << "Current symbol:" << currentSymbol;
+    qDebug() << "Head position:" << m_headPosition;
+
+    if (!m_transitions.contains(m_currentState)) {
+        QString msg = "No transitions for state " + m_currentState;
+        qDebug() << "ERROR:" << msg;
         stop();
-        emit halted("No transition defined for state " + m_currentState +
-                   " and symbol " + currentSymbol);
+        emit halted(msg);
+        return;
+    }
+
+    if (!m_transitions[m_currentState].contains(currentSymbol)) {
+        QString msg = "No transition for (" + m_currentState + ", '" + currentSymbol + "')";
+        qDebug() << "ERROR:" << msg;
+        qDebug() << "Available symbols:" << m_transitions[m_currentState].keys();
+        stop();
+        emit halted(msg);
         return;
     }
 
     Transition trans = m_transitions[m_currentState][currentSymbol];
+    qDebug() << "Found transition: write=" << trans.writeSymbol << "move=" << trans.move << "next=" << trans.nextState;
 
+    // Записываем символ
     if (m_headPosition >= m_tape.size()) {
         m_tape.append(trans.writeSymbol);
     } else {
         m_tape[m_headPosition] = trans.writeSymbol;
     }
 
-    moveHead(trans.move);
+    // Двигаем головку
+    if (trans.move == "R") {
+        m_headPosition++;
+    } else if (trans.move == "L") {
+        m_headPosition--;
+        if (m_headPosition < 0) m_headPosition = 0;
+    }
+
+    // Меняем состояние
     m_currentState = trans.nextState;
+
+    qDebug() << "New state:" << m_currentState;
+    qDebug() << "New head position:" << m_headPosition;
 
     emit tapeChanged();
     emit headPositionChanged();
     emit stateChanged();
-
-    if (m_headPosition < 2) {
-        emit needScroll(-1);
-    } else if (m_headPosition > m_tape.size() - 3) {
-        emit needScroll(1);
-    }
-}
-
-void TuringMachine::moveHead(const QString &direction)
-{
-    if (direction == "R") {
-        m_headPosition++;
-    } else if (direction == "L") {
-        m_headPosition--;
-        if (m_headPosition < 0) m_headPosition = 0;
-    }
 }
 
 bool TuringMachine::validateAlphabet(const QString &input) const
 {
     for (QChar ch : input) {
         QString symbol(ch);
-        if (!m_alphabet.contains(symbol) && symbol != m_blankSymbol) {
+        if (!m_alphabet.contains(symbol) && symbol != "Λ") {
+            qDebug() << "Invalid symbol:" << symbol;
             return false;
         }
     }

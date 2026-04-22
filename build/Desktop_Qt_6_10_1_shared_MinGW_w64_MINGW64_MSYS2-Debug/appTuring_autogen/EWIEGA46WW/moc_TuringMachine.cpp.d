@@ -196,11 +196,12 @@ C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debu
   C:/msys64/mingw64/include/pthread_signal.h \
   C:/msys64/mingw64/include/pthread_time.h \
   C:/msys64/mingw64/include/pthread_unistd.h \
+  C:/msys64/mingw64/include/qt6/QtCore/QDebug \
   C:/msys64/mingw64/include/qt6/QtCore/QList \
   C:/msys64/mingw64/include/qt6/QtCore/QMap \
   C:/msys64/mingw64/include/qt6/QtCore/QObject \
-  C:/msys64/mingw64/include/qt6/QtCore/QSet \
   C:/msys64/mingw64/include/qt6/QtCore/QString \
+  C:/msys64/mingw64/include/qt6/QtCore/QStringList \
   C:/msys64/mingw64/include/qt6/QtCore/QTimer \
   C:/msys64/mingw64/include/qt6/QtCore/QVariant \
   C:/msys64/mingw64/include/qt6/QtCore/q17memory.h \

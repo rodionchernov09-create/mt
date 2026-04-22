@@ -201,11 +201,12 @@ C:/QtProjects/Turing/TuringMachine.h
  mdp:C:/msys64/mingw64/include/pthread_signal.h
  mdp:C:/msys64/mingw64/include/pthread_time.h
  mdp:C:/msys64/mingw64/include/pthread_unistd.h
+ mdp:C:/msys64/mingw64/include/qt6/QtCore/QDebug
  mdp:C:/msys64/mingw64/include/qt6/QtCore/QList
  mdp:C:/msys64/mingw64/include/qt6/QtCore/QMap
  mdp:C:/msys64/mingw64/include/qt6/QtCore/QObject
- mdp:C:/msys64/mingw64/include/qt6/QtCore/QSet
  mdp:C:/msys64/mingw64/include/qt6/QtCore/QString
+ mdp:C:/msys64/mingw64/include/qt6/QtCore/QStringList
  mdp:C:/msys64/mingw64/include/qt6/QtCore/QTimer
  mdp:C:/msys64/mingw64/include/qt6/QtCore/QVariant
  mdp:C:/msys64/mingw64/include/qt6/QtCore/q17memory.h

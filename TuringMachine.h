@@ -4,14 +4,15 @@
 #include <QObject>
 #include <QMap>
 #include <QString>
+#include <QStringList>
 #include <QList>
 #include <QTimer>
-#include <QSet>
 #include <QVariant>
+#include <QDebug>
 
 struct Transition {
     QString writeSymbol;
-    QString move; // "L", "R", "S"
+    QString move;
     QString nextState;
 };
 
@@ -29,29 +30,20 @@ class TuringMachine : public QObject
 public:
     explicit TuringMachine(QObject *parent = nullptr);
 
-    // Геттеры
     QStringList getTape() const { return m_tape; }
     int getHeadPosition() const { return m_headPosition; }
     QString getCurrentState() const { return m_currentState; }
     bool isRunning() const { return m_isRunning; }
     int getSpeed() const { return m_speed; }
-    void setSpeed(int speed);
 
-    Q_INVOKABLE QVariantList getStates() const {
-        QVariantList list;
-        for (const QString &s : m_states) list.append(s);
-        return list;
-    }
-    Q_INVOKABLE QVariantList getAlphabet() const {
-        QVariantList list;
-        for (const QString &s : m_alphabet) list.append(s);
-        return list;
-    }
+    Q_INVOKABLE QVariantList getStates() const;
+    Q_INVOKABLE QVariantList getAlphabet() const;
 
-    // Управление алфавитами и программой
+    Q_INVOKABLE void setSpeed(int speed);
     Q_INVOKABLE void setAlphabet(const QString &tapeAlphabet, const QString &extraAlphabet);
     Q_INVOKABLE void addState();
     Q_INVOKABLE void removeState();
+    Q_INVOKABLE void addHaltState();
     Q_INVOKABLE void addSymbol(const QString &symbol);
     Q_INVOKABLE void removeSymbol(const QString &symbol);
     Q_INVOKABLE void setTransition(const QString &state, const QString &symbol,
@@ -59,8 +51,6 @@ public:
     Q_INVOKABLE void setTransitionString(const QString &state, const QString &symbol, const QString &value);
     Q_INVOKABLE QString getTransition(const QString &state, const QString &symbol) const;
     Q_INVOKABLE void clearProgram();
-
-    // Управление выполнением
     Q_INVOKABLE bool loadInputString(const QString &input);
     Q_INVOKABLE void start();
     Q_INVOKABLE void stop();
@@ -96,10 +86,8 @@ private:
     QString m_blankSymbol;
     QMap<QString, QMap<QString, Transition>> m_transitions;
     QString m_originalTape;
-    int m_originalHeadPosition;
 
     bool validateAlphabet(const QString &input) const;
-    void moveHead(const QString &direction);
 };
 
 #endif
