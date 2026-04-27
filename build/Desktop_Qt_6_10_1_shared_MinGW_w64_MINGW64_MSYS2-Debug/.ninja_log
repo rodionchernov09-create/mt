@@ -106,3 +106,11 @@
 820	2456	7985986764831727	CMakeFiles/appTuring.dir/appTuring_autogen/mocs_compilation.cpp.obj	4bbc273f210a98ff
 830	2731	7985986764928537	CMakeFiles/appTuring.dir/TuringMachine.cpp.obj	464b3656824a8709
 2731	2887	7985986783944677	appTuring.exe	a756545ff90cb33b
+19	791	7986346843169156	appTuring_autogen/timestamp	e55b78416d2eb922
+19	791	7986346843169156	appTuring_autogen/mocs_compilation.cpp	e55b78416d2eb922
+19	791	7986346843169156	C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debug/appTuring_autogen/timestamp	e55b78416d2eb922
+19	791	7986346843169156	C:/QtProjects/Turing/build/Desktop_Qt_6_10_1_shared_MinGW_w64_MINGW64_MSYS2-Debug/appTuring_autogen/mocs_compilation.cpp	e55b78416d2eb922
+795	2843	7986346843844576	CMakeFiles/appTuring.dir/main.cpp.obj	44620c054cef2485
+791	2932	7986346843813148	CMakeFiles/appTuring.dir/appTuring_autogen/mocs_compilation.cpp.obj	4bbc273f210a98ff
+798	3008	7986346843875521	CMakeFiles/appTuring.dir/TuringMachine.cpp.obj	464b3656824a8709
+3008	4032	7986346865986011	appTuring.exe	a756545ff90cb33b

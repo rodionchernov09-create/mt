@@ -11,9 +11,9 @@
 #include <QDebug>
 
 struct Transition {
-    QString writeSymbol;
-    QString move;
-    QString nextState;
+    QString writeSymbol;  // что записать в ячейку
+    QString move;         // куда двигаться: "L", "R", "S"
+    QString nextState;    // в какое состояние перейти
 };
 
 class TuringMachine : public QObject
@@ -71,7 +71,7 @@ signals:
     void programChanged();
 
 private slots:
-    void executeStep();
+    void executeStep(); //выполняет 1 шаг машины Тьюринга
 
 private:
     QStringList m_tape;

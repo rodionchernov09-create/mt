@@ -33,7 +33,7 @@ QVariantList TuringMachine::getAlphabet() const
 
 void TuringMachine::setSpeed(int speed)
 {
-    m_speed = qBound(1, speed, 20);
+    m_speed = qBound(1, speed, 20);// ограничивает значение между 1 и 20
     emit speedChanged();
     if (m_isRunning) {
         m_timer->start(1000 / m_speed);
