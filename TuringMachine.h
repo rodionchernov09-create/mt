@@ -48,7 +48,7 @@ public:
     Q_INVOKABLE void removeSymbol(const QString &symbol);
     Q_INVOKABLE void setTransition(const QString &state, const QString &symbol,
                                    const QString &writeSymbol, const QString &move, const QString &nextState);
-    Q_INVOKABLE void setTransitionString(const QString &state, const QString &symbol, const QString &value);
+    Q_INVOKABLE bool setTransitionString(const QString &state, const QString &symbol, const QString &value);
     Q_INVOKABLE QString getTransition(const QString &state, const QString &symbol) const;
     Q_INVOKABLE void clearProgram();
     Q_INVOKABLE bool loadInputString(const QString &input);

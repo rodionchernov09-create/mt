@@ -155,7 +155,7 @@ template <> constexpr inline auto TuringMachine::qt_create_metaobjectdata<qt_met
             { QMetaType::QString, 35 },
         }}),
         // Method 'setTransitionString'
-        QtMocHelpers::MethodData<void(const QString &, const QString &, const QString &)>(36, 2, QMC::AccessPublic, QMetaType::Void, {{
+        QtMocHelpers::MethodData<bool(const QString &, const QString &, const QString &)>(36, 2, QMC::AccessPublic, QMetaType::Bool, {{
             { QMetaType::QString, 32 }, { QMetaType::QString, 29 }, { QMetaType::QString, 37 },
         }}),
         // Method 'getTransition'
@@ -237,7 +237,8 @@ void TuringMachine::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
         case 19: _t->addSymbol((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
         case 20: _t->removeSymbol((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1]))); break;
         case 21: _t->setTransition((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[4])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[5]))); break;
-        case 22: _t->setTransitionString((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3]))); break;
+        case 22: { bool _r = _t->setTransitionString((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[3])));
+            if (_a[0]) *reinterpret_cast<bool*>(_a[0]) = std::move(_r); }  break;
         case 23: { QString _r = _t->getTransition((*reinterpret_cast<std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QString>>(_a[2])));
             if (_a[0]) *reinterpret_cast<QString*>(_a[0]) = std::move(_r); }  break;
         case 24: _t->clearProgram(); break;

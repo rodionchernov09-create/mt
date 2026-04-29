@@ -25,6 +25,7 @@ ApplicationWindow {
         GroupBox {
             title: "Настройка алфавитов"
             Layout.fillWidth: true
+            enabled: turingMachine ? !turingMachine.isRunning : true   // ← отключаем при работе
 
             RowLayout {
                 Column {
@@ -176,12 +177,16 @@ ApplicationWindow {
 
         // Ввод строки
         RowLayout {
+            enabled: turingMachine ? !turingMachine.isRunning : true   // ← отключаем при работе
             Label { text: "Входная строка:" }
             TextField {
                 id: inputStringField
                 placeholderText: "Введите строку из символов алфавита"
                 Layout.fillWidth: true
                 text: "ab"
+                onActiveFocusChanged: {
+                    if (activeFocus) activeCellInput = this
+                }
             }
             Button {
                 text: "Задать строку"
@@ -201,6 +206,7 @@ ApplicationWindow {
             title: "Программа"
             Layout.fillWidth: true
             Layout.fillHeight: true
+            enabled: turingMachine ? !turingMachine.isRunning : true   // ← отключаем при работе
 
             ColumnLayout {
                 anchors.fill: parent
@@ -217,9 +223,21 @@ ApplicationWindow {
 
                     Label { text: "Быстрый ввод:" }
                     Button { text: "Λ"; onClicked: { if(activeCellInput) activeCellInput.text += "Λ" } }
-                    Button { text: "R"; onClicked: { if(activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,R,q1"; else activeCellInput.text = t.replace(/,.,/, ",R,") } } }
-                    Button { text: "L"; onClicked: { if(activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,L,q1"; else activeCellInput.text = t.replace(/,.,/, ",L,") } } }
-                    Button { text: "S"; onClicked: { if(activeCellInput) { var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,S,q1"; else activeCellInput.text = t.replace(/,.,/, ",S,") } } }
+                    Button { text: "R"; onClicked: {
+                        if (activeCellInput && activeCellInput !== inputStringField) {
+                            var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,R,q1"; else activeCellInput.text = t.replace(/,.,/, ",R,")
+                        }
+                    }}
+                    Button { text: "L"; onClicked: {
+                        if (activeCellInput && activeCellInput !== inputStringField) {
+                            var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,L,q1"; else activeCellInput.text = t.replace(/,.,/, ",L,")
+                        }
+                    }}
+                    Button { text: "S"; onClicked: {
+                        if (activeCellInput && activeCellInput !== inputStringField) {
+                            var t = activeCellInput.text; if(t==="") activeCellInput.text = "Λ,S,q1"; else activeCellInput.text = t.replace(/,.,/, ",S,")
+                        }
+                    }}
                 }
 
                 // Один ScrollView с двумя скроллбарами
@@ -275,8 +293,10 @@ ApplicationWindow {
                                             font.pixelSize: 11
                                             onEditingFinished: {
                                                 if (turingMachine) {
-                                                    turingMachine.setTransitionString(stateName, modelData, text)
-                                                    statusMessage = "✓ " + stateName + "," + modelData + " → " + text
+                                                    var success = turingMachine.setTransitionString(stateName, modelData, text)
+                                                    if (success) {
+                                                        statusMessage = "✓ " + stateName + "," + modelData + " → " + text
+                                                    }
                                                 }
                                             }
                                             onActiveFocusChanged: {

@@ -131,7 +131,7 @@ void TuringMachine::setTransition(const QString &state, const QString &symbol,
     emit programChanged();
 }
 
-void TuringMachine::setTransitionString(const QString &state, const QString &symbol, const QString &value)
+bool TuringMachine::setTransitionString(const QString &state, const QString &symbol, const QString &value)
 {
     qDebug() << "=== setTransitionString ===";
     qDebug() << "State:" << state;
@@ -139,31 +139,53 @@ void TuringMachine::setTransitionString(const QString &state, const QString &sym
     qDebug() << "Value:" << value;
 
     if (value.isEmpty()) {
+        // Удаление перехода
         if (m_transitions.contains(state)) {
             m_transitions[state].remove(symbol);
             qDebug() << "Removed transition";
         }
-    } else {
-        QStringList parts = value.split(',');
-        if (parts.size() == 3) {
-            QString writeSymbol = parts[0].trimmed();
-            QString move = parts[1].trimmed();
-            QString nextState = parts[2].trimmed();
-
-            qDebug() << "Parsed: write=" << writeSymbol << "move=" << move << "next=" << nextState;
-
-            if (move != "R" && move != "L" && move != "S") {
-                emit error("Move must be R, L, or S");
-                return;
-            }
-
-            setTransition(state, symbol, writeSymbol, move, nextState);
-        } else {
-            qDebug() << "ERROR: Invalid format, parts count =" << parts.size();
-            emit error("Invalid format. Use: символ,движение,состояние (пример: a,R,q0)");
-        }
+        emit programChanged();
+        return true;
     }
-    emit programChanged();
+
+    QStringList parts = value.split(',');
+    if (parts.size() == 3) {
+        QString writeSymbol = parts[0].trimmed();
+        QString move = parts[1].trimmed();
+        QString nextState = parts[2].trimmed();
+
+        qDebug() << "Parsed: write=" << writeSymbol << "move=" << move << "next=" << nextState;
+
+        if (move != "R" && move != "L" && move != "S") {
+            emit error("Move must be R, L, or S");
+            return false;
+        }
+
+        // Проверка: записываемый символ должен быть в алфавите
+        if (!m_alphabet.contains(writeSymbol)) {
+            QString errMsg = QString("❌ (%1, '%2') → запись '%3': символа нет в алфавите")
+                .arg(state, symbol, writeSymbol);
+            emit error(errMsg);
+            return false;
+        }
+
+        // Проверка: целевое состояние должно существовать
+        if (!m_states.contains(nextState)) {
+            QString errMsg = QString("❌ (%1, '%2') → %3: такого состояния нет")
+                .arg(state, symbol, nextState);
+            emit error(errMsg);
+            return false;
+        }
+
+        // Всё корректно – сохраняем переход
+        setTransition(state, symbol, writeSymbol, move, nextState);
+        emit programChanged();
+        return true;
+    } else {
+        qDebug() << "ERROR: Invalid format, parts count =" << parts.size();
+        emit error("Invalid format. Use: символ,движение,состояние (пример: a,R,q0)");
+        return false;
+    }
 }
 
 QString TuringMachine::getTransition(const QString &state, const QString &symbol) const
