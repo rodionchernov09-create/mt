@@ -62,7 +62,7 @@ ApplicationWindow {
                     anchors.fill: parent
                     spacing: 5
 
-                    // Кнопка прокрутки влево (мгновенная)
+                    // Кнопка прокрутки влево
                     Rectangle {
                         width: 30; height: 60; color: "#d0d0d0"; radius: 5
                         Text { anchors.centerIn: parent; text: "◀"; font.pixelSize: 20 }
@@ -95,7 +95,7 @@ ApplicationWindow {
                         }
                     }
 
-                    // Кнопка прокрутки вправо (мгновенная)
+                    // Кнопка прокрутки вправо
                     Rectangle {
                         width: 30; height: 60; color: "#d0d0d0"; radius: 5
                         Text { anchors.centerIn: parent; text: "▶"; font.pixelSize: 20 }
@@ -129,8 +129,7 @@ ApplicationWindow {
                         var cellLeft = headPos * cellFullWidth - contentX
                         var cellCenter = cellLeft + 30   // половина ячейки (60/2)
                         var targetX = cellCenter - width/2   // чтобы центр каретки совпал с центром ячейки
-                        // Ручная поправка: сдвигаем каретку вправо (подберите значение: 2, 3, 4...)
-                        targetX += 35   // ← добавьте эту строку, если каретка левее; попробуйте 2, 3, 4
+                        targetX += 35
                         // Ограничения
                         var minX = 0
                         var maxX = tapeListView.width - width
@@ -145,7 +144,7 @@ ApplicationWindow {
                         requestPaint()
                     }
 
-                    // Мгновенное центрирование ленты (без анимации)
+                    // Мгновенное центрирование ленты
                     function centerOnHead() {
                         if (!turingMachine) return
                         var headPos = turingMachine.headPosition
@@ -160,7 +159,7 @@ ApplicationWindow {
                         ctx.clearRect(0, 0, width, height)
                         ctx.fillStyle = "red"
                         ctx.beginPath()
-                        ctx.moveTo(width/2, 0)      // остриё ВВЕРХ
+                        ctx.moveTo(width/2, 0)
                         ctx.lineTo(0, height)
                         ctx.lineTo(width, height)
                         ctx.fill()
